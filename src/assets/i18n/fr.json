@@ -15,7 +15,7 @@
     "idnumber": "Numéro de pièce d'identité",
     "idnumber_nature": "Nature de pièce d'identité",
     "phone": "Contact",
-    "username": "Username",
+    "username": "Nom d'utilisateur",
     "email": "Email",
     "password": "Mot de passe",
     "blocked": "Bloqué",
@@ -37,7 +37,7 @@
     "partner_gender": "Genre du partenaire",
     "release_date": "Date de sortie",
     "signature": "Signature",
-    "autonomy": "Autonomie",
+    "autonomy": "Autonome",
     "nature": "Nature",
     "street": "commune",
     "location": "Localisation",
@@ -61,5 +61,7 @@
     "district_capital": "Chef-lieu de district",
     "region_capital": "Chef-lieu de région",
     "department_capital": "Chef-lieu de departement",
-    "subprefecture_capital": "Chef-lieu de sous-prefecture"
+    "subprefecture_capital": "Chef-lieu de sous-prefecture",
+    "true": "Oui",
+    "false": "Non"
 }

@@ -11,8 +11,8 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { Client } from 'src/app/model/client.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
+import { IDNUMBER_NATURE, BEDROOM_TYPE, OCCUPATION_TYPE, GENDER, NATIONALITY, PHONE_TYPE } from 'src/app/shared/constant/form.constant';
 
 @Component({
   selector: 'app-client-show',
@@ -32,92 +32,54 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
     </div>
 
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'firstname'|translate }}</mat-label>
-          {{ item.firstname }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'name'|translate }}</mat-label>
-          {{ item.name }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'birthdate'|translate }}</mat-label>
-          {{ item.birthdate }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'gender'|translate }}</mat-label>
-          {{ item.gender }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'phone'|translate }}</mat-label>
-          {{ item.phone }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'nationality'|translate }}</mat-label>
-          {{ item.nationality }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'idnumber'|translate }}</mat-label>
-          {{ item.idnumber }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'idnumber_nature'|translate }}</mat-label>
-          {{ item.idnumberNature }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'enter_date'|translate }}</mat-label>
-          {{ item.enterDate }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'number_of_nights'|translate }}</mat-label>
-          {{ item.numberOfNights }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'number_of_hours'|translate }}</mat-label>
-          {{ item.numberOfHours }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'occupation_type'|translate }}</mat-label>
-          {{ item.occupationType }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'bedroom_number'|translate }}</mat-label>
-          {{ item.bedroomNumber }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'bedroom_type'|translate }}</mat-label>
-          {{ item.bedroomType }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'number_of_visitors'|translate }}</mat-label>
-          {{ item.numberOfVisitors }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'partner_gender'|translate }}</mat-label>
-          {{ item.partnerGender }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-md-6'>
-        <mat-label>{{ 'release_date'|translate }}</mat-label>
-          {{ item.releaseDate }}
-      </div>
-      <div class='col-md-6'>
-        <mat-label>{{ 'signature'|translate }}</mat-label>
-          {{ item.signature }}
-      </div>
-    </div>
+    <mat-card class='mb-2'>
+      <mat-card-header class='border-bottom border-secondary mb-2'>
+        <mat-card-title>{{ 'person_information'|translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'firstname'|translate }}</b> <br> {{ item.firstname }} </div>
+            <div class='mb-1'> <b>{{ 'name'|translate }}</b> <br> {{ item.name }} </div>
+            <div class='mb-1'> <b>{{ 'birthdate'|translate }}</b> <br> {{ item.birthdate | date:'mediumDate':'UTC' }} </div>
+            <div class='mb-1'> <b>{{ 'gender'|translate }}</b> <br> {{ gender[item.gender] }} </div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'nationality'|translate }}</b> <br> {{ nationality[item.nationality] }} </div>
+            <div class='mb-1'> <b>{{ 'idnumber_nature'|translate }}</b> <br> {{ idnumber_nature[item.idnumberNature] }} </div>
+            <div class='mb-1'> <b>{{ 'idnumber'|translate }}</b> <br> {{ item.idnumber }} </div>
+            <div class='mb-1'> <b>{{ 'phone'|translate }}</b> <br> {{ phone_type[item.phoneType] }} : {{ item.phone }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card>
+      <mat-card-header class='border-bottom border-secondary mb-2'>
+        <mat-card-title>{{ 'client_information'|translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'enter_date'|translate }}</b> <br> {{ item.enterDate }}</div>
+            <div class='mb-1'><b>{{ 'occupation_type'|translate }}</b> <br>  {{ occupation_type[item.occupationType] }}</div>
+            <div class='mb-1' *ngIf='item.occupationType=="n"'><b>{{ 'number_of_nights'|translate }}</b> <br> {{ item.numberOfNights }}</div>
+            <div class='mb-1' *ngIf='item.occupationType=="p"'><b>{{ 'number_of_hours'|translate }}</b> <br> {{ item.numberOfHours }}</div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'bedroom_type'|translate }}</b> <br> {{ bedroom_type[item.bedroomType] }}</div>
+            <div class='mb-1'><b>{{ 'bedroom_number'|translate }}</b> <br> {{ item.bedroomNumber }}</div>
+            <div class='mb-1'> <b>{{ 'created_at'|translate }}</b> <br> {{ item.createdAt | date:'mediumDate':'UTC' }} </div>
+          </div>
+        </div>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <div class='mb-1'><b>{{ 'partner'|translate }}</b></div>
+            <div class='mb-1' *ngFor='let el of item.partners'>{{ gender[el.gender] }} : {{ el.name }} : {{ el.age }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   `
 })
 export class ClientShowComponent implements OnInit {
@@ -125,6 +87,12 @@ export class ClientShowComponent implements OnInit {
   item = new Client();
   loader: boolean;
   route = ROUTE;
+  readonly idnumber_nature = IDNUMBER_NATURE;
+  readonly bedroom_type = BEDROOM_TYPE;
+  readonly occupation_type = OCCUPATION_TYPE;
+  readonly gender = GENDER;
+  readonly nationality = NATIONALITY;
+  readonly phone_type = PHONE_TYPE;
   readonly dialog_config = DIALOG_CONFIG;
 
   constructor(
@@ -135,8 +103,7 @@ export class ClientShowComponent implements OnInit {
     private api: ApiService,
     private alert: AlertService
   ) {
-    this.route.path = 'client';
-    this.route.id = this.activatedRoute.snapshot.params?.id;
+    this.route = { path: 'client', id: this.activatedRoute.snapshot.params?.id };
   }
 
   ngOnInit(): void {

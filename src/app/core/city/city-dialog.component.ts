@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { first, map, startWith } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,10 +12,9 @@ import { AlertService } from 'src/app/service/alert.service';
 import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.component';
 
 import { City } from 'src/app/model/city.model';
-import { Subprefecture } from 'src/app/model/subprefecture.model';
+import { Department } from 'src/app/model/department.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
 
 @Component({
   selector: 'app-city-dialog',
@@ -30,40 +29,26 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <button *ngIf='activeButton("delete")' (click)='delete()' mat-mini-fab color='primary' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
     </div>
   </div>
-  <div class='d-flex justify-content-center position-fixed fixed-top mr-4 mb-2'>
+  <div class='d-flex justify-content-center mr-4 mb-2'>
     <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
   </div>
 
   <form [formGroup]='form' *ngIf='form'>
     <div class='row'>
-      <div class='col-lg-3 col-md-12'>
+      <div class='col-sm-6'>
         <mat-form-field appearance='outline' >
           <mat-label>{{ 'name'|translate }}</mat-label>
           <input matInput formControlName='name'>
         </mat-form-field>
       </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-2 col-xs-12'>
+      <div class='col-sm-6'>
         <mat-form-field appearance='outline' >
-          <mat-label>{{ 'subprefecture'|translate }}</mat-label>
-          <mat-select formControlName='subprefectureID'>
-            <mat-option *ngFor='let el of subprefectures' [value]='el.id'>{{el.name}}</mat-option>
-          </mat-select>
+          <mat-label>{{ 'department'|translate }}</mat-label>
+          <input matInput matInput formControlName='department' [matAutocomplete]='auto'>
+          <mat-autocomplete #auto='matAutocomplete' [displayWith]='displayFn'>
+            <mat-option *ngFor='let el of filteredDepartments | async' [value]='el'>{{ el.name }}</mat-option>
+          </mat-autocomplete>
         </mat-form-field>
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-slide-toggle formControlName='districtCapital'></mat-slide-toggle>&nbsp;{{ 'district_capital'|translate }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-slide-toggle formControlName='regionCapital'></mat-slide-toggle>&nbsp;{{ 'region_capital'|translate }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-slide-toggle formControlName='departmentCapital'></mat-slide-toggle>&nbsp;{{ 'department_capital'|translate }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-slide-toggle formControlName='subprefectureCapital'></mat-slide-toggle>&nbsp;{{ 'subprefecture_capital'|translate }}
       </div>
     </div>
   </form>
@@ -75,7 +60,8 @@ export class CityDialogComponent implements OnInit {
   loader: boolean;
   route = ROUTE;
   readonly dialog_config = DIALOG_CONFIG;
-  subprefectures: Subprefecture[] = [];
+  departments: Department[] = [];
+  filteredDepartments: Observable<Department[]>;
 
   constructor(
     private fb: FormBuilder,
@@ -86,15 +72,13 @@ export class CityDialogComponent implements OnInit {
     private api: ApiService,
     private alert: AlertService
   ) {
-    this.route.path = 'city';
-    this.route.id = this.activatedRoute.snapshot.params?.id;
+    this.route = { path: 'city', id: this.activatedRoute.snapshot.params?.id };
   }
 
   ngOnInit(): void {
     forkJoin({
-      subprefectures: this.api.findAll({ ...this.route, path: 'subprefecture' })
-    }).pipe(first())
-      .subscribe(res => { this.subprefectures = res.subprefectures; });
+      departments: this.api.findAll({ ...this.route, path: 'department' })
+    }).pipe(first()).subscribe(res => { this.departments = res.departments;  this.filteredDepartments = of(res.departments); });
 
     this.createForm();
     if (this.route.id) {
@@ -105,22 +89,21 @@ export class CityDialogComponent implements OnInit {
           err => { this.alert.error(err); this.loader = false; }
         );
     }
+
+    this.form.controls.departmentId.valueChanges.pipe(startWith(''), map(value => typeof value === 'string' ? value : value.name), map(name => this.filterDepartment(name))).subscribe();
   }
 
   createForm(): void {
     this.form = this.fb.group({
       name: ['', Validators.compose([Validators.required])],
-      subprefectureID: ['', Validators.compose([Validators.required])],
-      districtCapital: [false, Validators.compose([Validators.required])],
-      regionCapital: [false, Validators.compose([Validators.required])],
-      departmentCapital: [false, Validators.compose([Validators.required])],
-      subprefectureCapital: [false, Validators.compose([Validators.required])],
+      department: ['', Validators.compose([Validators.required])],
+      departmentId: ['']
     });
   }
 
   create(): void {
     this.loader = true;
-    this.form.value.subprefectureID = parseInt(this.form.value.subprefectureID);
+    this.form.value.departmentId = this.form.value.department.id;
     this.api.create(this.route, this.form.value).pipe(first())
       .subscribe(
         () => { this.alert.success(); this.createForm(); this.loader = false; },
@@ -130,6 +113,7 @@ export class CityDialogComponent implements OnInit {
 
   update(): void {
     this.loader = true;
+    this.form.value.departmentId = this.form.value.department.id;
     this.api.update(this.route, this.form.value).pipe(first())
       .subscribe(
         () => { this.alert.success(); this.loader = false; },
@@ -155,15 +139,18 @@ export class CityDialogComponent implements OnInit {
 
   activeButton(action: string): boolean {
     switch (action) {
-      case 'create':
-        return !this.route.id && this.form.valid && !this.loader;
-      case 'update':
-        return this.route.id && this.form.valid && !this.loader;
-      case 'delete':
-        return this.route.id && !this.loader;
-      default:
-        return false;
+      case 'create': return !this.route.id && this.form.valid && !this.loader;
+      case 'update': return this.route.id && this.form.valid && !this.loader;
+      case 'delete': return this.route.id && !this.loader;
+      default: return false;
     }
+  }
+
+  displayFn(item: Department): string { return item && item.name ? item.name : ''; }
+  
+  filterDepartment(name: string) {
+    if(name == '' || name == null) this.filteredDepartments = of(this.departments.slice());
+    else this.filteredDepartments = of(this.departments.filter(p => p.name.toLowerCase().indexOf(name.toLowerCase()) === 0));
   }
 
 }

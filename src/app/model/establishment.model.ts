@@ -1,13 +1,13 @@
 ﻿import { City } from './city.model';
+import { User } from './user.model';
 
 export class Establishment {
   id: number;
   name: string;
   nature: string;
-  street: string;
+  municipality: string;
   location: string;
-  managers: string;
-  receptionists: string;
-  cityID: number;
+  cityId: number;
   city: City;
+  users: User[] = [];
 }

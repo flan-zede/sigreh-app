@@ -61,5 +61,7 @@
     "district_capital": "District capital",
     "region_capital": "Region capital",
     "department_capital": "Department capital",
-    "subprefecture_capital": "Subprefecture capital"
+    "subprefecture_capital": "Subprefecture capital",
+    "true": "True",
+    "false": "False"
 }

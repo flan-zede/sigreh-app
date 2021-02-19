@@ -7,7 +7,7 @@ import { ClientShowComponent } from './client-show.component';
 import { ClientDialogComponent } from './client-dialog.component';
 
 import { UserRoleGuard } from 'src/app/shared/guard/user-role.guard';
-import { USER_ROLE_HIERARCHY } from 'src/app/shared/constant/user-role-hierarchy.constant';
+import { USER_ROLE_HIERARCHY } from 'src/app/shared/constant/app.constant';
 
 const routes: Routes = [
   {

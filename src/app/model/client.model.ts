@@ -1,18 +1,10 @@
-﻿import { Establishment } from './establishment.model';
+﻿import { Partner } from './partner.model';
+import { Establishment } from './establishment.model';
 import { User } from './user.model';
 
 export class Client {
   id: number;
-  phone: string;
-  enterDate: Date;
-  numberOfNights: number;
-  numberOfHours: number;
-  occupationType: string;
-  bedroomNumber: number;
-  bedroomType: string;
-  numberOfVisitors: number;
-  partnerGender: string;
-  releaseDate: Date;
+
   name: string;
   firstname: string;
   birthdate: Date;
@@ -20,11 +12,23 @@ export class Client {
   nationality: string;
   idnumber: string;
   idnumberNature: string;
-  signature: string;
+  
+  phoneType: string;
+  phone: string;
+  
+  occupationType: string;
+  numberOfNights: number;
+  numberOfHours: number;
+  bedroomNumber: number;
+  bedroomType: string;
+  
+  enterDate: Date;
   createdAt: Date;
+  
+  partners: Partner[];
 
-  establishmentID: number;
-  userID: number;
+  establishmentId: number;
+  userId: number;
 
   establishment: Establishment;
   user: User;

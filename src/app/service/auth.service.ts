@@ -4,8 +4,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from 'src/environments/environment';
-import { LoginInterface } from '../shared/interface/login.interface';
-import { AuthResponseInterface } from '../shared/interface/auth-response.interface';
+import { LoginInterface, AuthResponseInterface } from '../shared/interface/app.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

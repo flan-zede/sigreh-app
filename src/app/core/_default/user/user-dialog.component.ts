@@ -12,17 +12,13 @@ import { AlertService } from 'src/app/service/alert.service';
 import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.component';
 
 import { User } from 'src/app/model/user.model';
-import { District } from 'src/app/model/district.model';
 import { Region } from 'src/app/model/region.model';
 import { Department } from 'src/app/model/department.model';
-import { Subprefecture } from 'src/app/model/subprefecture.model';
-import { City } from 'src/app/model/city.model';
 import { Establishment } from 'src/app/model/establishment.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { USER_ROLE } from 'src/app/shared/constant/user-role.constant';
-import { IDNUMBER_NATURE } from 'src/app/shared/constant/idnumber-nature.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, USER_ROLE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
+import { IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE } from 'src/app/shared/constant/form.constant';
+import { RelationInterface, RouteInterface } from 'src/app/shared/interface/app.interface';
 
 @Component({
   selector: 'app-user-dialog',
@@ -37,7 +33,7 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <button *ngIf='activeButton("delete")' (click)='delete()' mat-mini-fab color='primary' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
     </div>
   </div>
-  <div class='d-flex justify-content-center position-fixed fixed-top mr-4 mb-2'>
+  <div class='d-flex justify-content-center mr-4 mb-2'>
     <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
   </div>
 
@@ -45,20 +41,20 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
     <mat-step [stepControl]='formPerson'>
       <form [formGroup]='formPerson'>
         <ng-template matStepLabel>{{ 'person_information'|translate }}</ng-template>
-          <div class='row mt-1'>
-            <div class='col-lg-3 col-md-6'>
+          <div class='row mt-2'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'firstname'|translate }}</mat-label>
                 <input matInput formControlName='firstname'>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'name'|translate }}</mat-label>
                 <input matInput formControlName='name'>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'birthdate'|translate }}</mat-label>
                 <input matInput formControlName='birthdate' [matDatepicker]='birthdate' readonly>
@@ -66,42 +62,49 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
                 <mat-datepicker #birthdate disabled='false'></mat-datepicker>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'gender'|translate }}</mat-label>
                 <mat-select formControlName='gender'>
-                  <mat-option value='M'>{{ 'man'|translate }}</mat-option>
-                  <mat-option value='W'>{{ 'woman'|translate }}</mat-option>
+                  <mat-option *ngFor='let el of gender | keyvalue' [value]='el.key'>{{ el.value }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
 
           <div class='row'>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'nationality'|translate }}</mat-label>
-                <input matInput formControlName='nationality'>
+                <mat-select formControlName='nationality'>
+                  <mat-option *ngFor='let el of nationality | keyvalue' [value]='el.key'>{{ el.value }}</mat-option>
+                </mat-select>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
+              <mat-form-field appearance='outline' >
+                <mat-label>{{ 'idnumber_nature'|translate }}</mat-label>
+                <mat-select formControlName='idnumberNature'>
+                  <mat-option *ngFor='let el of idnumber_nature | keyvalue' [value]='el.key'>{{ el.value }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'idnumber'|translate }}</mat-label>
                 <input matInput formControlName='idnumber'>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
-                <mat-label>{{ 'idnumber_nature'|translate }}</mat-label>
-                <mat-select formControlName='idnumberNature'>
-                  <mat-option *ngFor='let el of idnumber_nature' [value]='el.value'>{{ el.text }}</mat-option>
+                <mat-label>{{ 'phone_type'|translate }}</mat-label>
+                <mat-select formControlName='phoneType'>
+                  <mat-option *ngFor='let el of phone_type | keyvalue' [value]='el.key'>{{ el.value }}</mat-option>
                 </mat-select>
               </mat-form-field>
-            </div>
-            <div class='col-lg-3 col-md-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'phone'|translate }}</mat-label>
-                <input matInput formControlName='phone' appNumeric>
+                <input matInput formControlName='phone'>
               </mat-form-field>
             </div>
           </div>
@@ -113,27 +116,27 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <mat-step [stepControl]='formAccount'>
         <form [formGroup]='formAccount'>
           <ng-template matStepLabel>{{ 'account_information'|translate }}</ng-template>
-          <div class='row mt-1'>
-            <div class='col-lg-3 col-md-6'>
+          <div class='row mt-2'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'username'|translate }}</mat-label>
                 <input matInput formControlName='username'>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline' >
                 <mat-label>{{ 'email'|translate }}</mat-label>
                 <input matInput formControlName='email'>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline'>
                 <mat-label>{{ 'password'|translate }}</mat-label>
                 <input matInput [type]="hide ? 'password' : 'text'" formControlName='password' #password>
                 <mat-icon matSuffix (click)='hide = !hide'>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-3 col-sm-6'>
               <mat-form-field appearance='outline'>
                 <mat-label>{{ 'confirm_password'|translate }}</mat-label>
                 <input matInput [type]="hide ? 'password' : 'text'" formControlName='confirmPassword' appConfirmEqual='password'>
@@ -141,83 +144,43 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
                 <mat-error *ngIf='formAccount.controls["confirmPassword"].errors?.notEqual'>{{ 'password_confirm_match'|translate }}</mat-error>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6 mb-1'>
-              <mat-form-field appearance='outline' >
-                <mat-label>{{ 'role'|translate }}</mat-label>
-                <mat-select formControlName='role'>
-                  <mat-option *ngFor='let el of user_role' [value]='el.value'>{{ el.text }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
           </div>
 
           <div class='row'>
-            <div class='col-lg-12'>
-              <mat-slide-toggle formControlName='blocked'></mat-slide-toggle>&nbsp;{{ 'blocked'|translate }}
-            </div>
-          </div>
-          <div class='mt-1'>
-            <button mat-stroked-button color='primary' matStepperPrevious>{{ 'back'|translate }}</button>
-            <button mat-stroked-button color='primary' matStepperNext>{{ 'next'|translate }}</button>
-          </div>
-        </form>
-      </mat-step>
-
-
-      <mat-step [stepControl]='formRelation'>
-        <form [formGroup]='formRelation'>
-          <ng-template matStepLabel>{{ 'relation_information'|translate }}</ng-template>
-          <div class='row mt-1'>
-            <div class='col-lg-3 col-md-6'>
-              <mat-form-field appearance='outline'>
-                <mat-label>{{ 'district'|translate }}</mat-label>
-                <mat-select formControlName='districts'>
-                  <mat-option *ngFor='let el of districts' [value]='el.id'>{{ el.name }}</mat-option>
+            <div class='col-md-4'>
+              <mat-form-field appearance='outline' >
+                <mat-label>{{ 'role'|translate }}</mat-label>
+                <mat-select formControlName='role'>
+                  <mat-option *ngFor='let el of user_role | keyvalue' [value]='el.key'>{{ el.value }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-4' *ngIf='formAccount.controls["role"].value == "drmt"' >
               <mat-form-field appearance='outline'>
                 <mat-label>{{ 'region'|translate }}</mat-label>
-                <mat-select formControlName='regions'>
+                <mat-select [(value)]='selectedR' multiple required>
                   <mat-option *ngFor='let el of regions' [value]='el.id'>{{ el.name }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
+            <div class='col-md-4' *ngIf='formAccount.controls["role"].value == "ddmt" || formAccount.controls["role"].value == "pp"'>
               <mat-form-field appearance='outline'>
                 <mat-label>{{ 'department'|translate }}</mat-label>
-                <mat-select formControlName='departments'>
+                <mat-select [(value)]='selectedD' multiple required>
                   <mat-option *ngFor='let el of departments' [value]='el.id'>{{ el.name }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class='col-lg-3 col-md-6'>
-              <mat-form-field appearance='outline'>
-                <mat-label>{{ 'subprefecture'|translate }}</mat-label>
-                <mat-select formControlName='subprefectures'>
-                  <mat-option *ngFor='let el of subprefectures' [value]='el.id'>{{ el.name }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-md-6'>
-              <mat-form-field appearance='outline'>
-                <mat-label> {{ 'city'|translate }}</mat-label>
-                <mat-select formControlName='cities'>
-                  <mat-option *ngFor='let el of cities' [value]='el.id'>{{ el.name }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class='col-md-6'>
-              <mat-form-field appearance='outline'>
+            <div class='col-md-4' *ngIf='formAccount.controls["role"].value == "reh" || formAccount.controls["role"].value == "geh"'>
+              <mat-form-field appearance='outline' >
                 <mat-label>{{ 'establishment'|translate }}</mat-label>
-                <mat-select formControlName='establishments'>
-                  <mat-option *ngFor='let el of establishments' [value]='el.id'>{{ el.name }}</mat-option>
+                <mat-select [(value)]='selectedE' required>
+                  <mat-option *ngFor='let el of establishments' [value]='el.id'>{{ el.name }} . {{ el.city?.name }}</mat-option>
                 </mat-select>
               </mat-form-field>
+            </div>
+            <div class='col-md-4'>
+              <mat-slide-toggle formControlName='blocked'></mat-slide-toggle>&nbsp;{{ 'blocked'|translate }}
             </div>
           </div>
         </form>
@@ -230,19 +193,26 @@ export class UserDialogComponent implements OnInit {
 
   formPerson: FormGroup;
   formAccount: FormGroup;
-  formRelation: FormGroup;
   loader: boolean;
   hide: boolean = true;
-  route = ROUTE;
-  readonly idnumber_nature = IDNUMBER_NATURE;
+
+  route: RouteInterface = ROUTE;
+  relation: RelationInterface;
+
   readonly user_role = USER_ROLE;
+  readonly idnumber_nature = IDNUMBER_NATURE;
+  readonly gender = GENDER;
+  readonly nationality = NATIONALITY;
+  readonly phone_type = PHONE_TYPE;
   readonly dialog_config = DIALOG_CONFIG;
-  districts: District[] = [];
-  regions: Region[] = [];
-  departments: Department[] = [];
-  subprefectures: Subprefecture[] = [];
-  cities: City[] = [];
-  establishments: Establishment[] = [];
+
+  regions: Region[] = null;
+  departments: Department[] = null;
+  establishments: Establishment[] = null;
+
+  selectedR: number[] = null;
+  selectedD: number[] = null;
+  selectedE: number = null;
 
   constructor(
     private fb: FormBuilder,
@@ -253,26 +223,20 @@ export class UserDialogComponent implements OnInit {
     private api: ApiService,
     private alert: AlertService
   ) {
-    this.route.path = 'user';
-    this.route.id = this.activatedRoute.snapshot.params?.id;
+    this.route = { path: 'user', id: this.activatedRoute.snapshot.params?.id };
+    this.relation = { id: this.route.id, action: 'add' };
   }
 
   ngOnInit(): void {
     forkJoin({
-      districts: this.api.findAll({ ...this.route, path: 'district' }),
       regions: this.api.findAll({ ...this.route, path: 'region' }),
       departments: this.api.findAll({ ...this.route, path: 'department' }),
-      subprefectures: this.api.findAll({ ...this.route, path: 'subprefecture' }),
-      cities: this.api.findAll({ ...this.route, path: 'city' }),
       establishments: this.api.findAll({ ...this.route, path: 'establishment' })
     }).pipe(first())
       .subscribe(
         res => {
-          this.districts = res.districts;
           this.regions = res.regions;
           this.departments = res.departments;
-          this.subprefectures = res.subprefectures;
-          this.cities = res.cities;
           this.establishments = res.establishments;
         }
       );
@@ -285,7 +249,6 @@ export class UserDialogComponent implements OnInit {
           (item: User) => {
             this.formPerson.patchValue(item);
             this.formAccount.patchValue(item);
-            this.formRelation.patchValue(item);
             this.loader = false;
           },
           err => { this.alert.error(err); this.loader = false; }
@@ -302,6 +265,7 @@ export class UserDialogComponent implements OnInit {
       nationality: ['', Validators.compose([Validators.required])],
       idnumber: ['', Validators.compose([Validators.required])],
       idnumberNature: ['', Validators.compose([Validators.required])],
+      phoneType: ['', Validators.compose([Validators.required])],
       phone: ['', Validators.compose([Validators.required])]
     });
     this.formAccount = this.fb.group({
@@ -312,32 +276,33 @@ export class UserDialogComponent implements OnInit {
       blocked: [false, Validators.compose([Validators.required])],
       role: ['', Validators.compose([Validators.required])]
     });
-    this.formRelation = this.fb.group({
-      districts: [''],
-      regions: [''],
-      departments: [''],
-      subprefectures: [''],
-      cities: [''],
-      establishments: ['']
-    });
   }
 
-  create(): void {
+  create() {
     this.loader = true;
-    this.api.create(this.route, { ...this.formPerson.value, ...this.formAccount.value, ...this.formRelation.value })
+    this.api.create(this.route, { ...this.formPerson.value, ...this.formAccount.value })
     .pipe(first())
       .subscribe(
-        () => { this.alert.success(); this.createForm(); this.loader = false; },
+        (item: User) => { 
+          this.setRelations(item.id);
+          this.alert.success(); 
+          this.createForm(); 
+          this.loader = false; 
+        },
         err => { this.alert.error(err); this.loader = false; }
       );
   }
 
   update(): void {
     this.loader = true;
-    this.api.update(this.route, { ...this.formPerson.value, ...this.formAccount.value, ...this.formRelation.value })
+    this.api.update(this.route, { ...this.formPerson.value, ...this.formAccount.value })
     .pipe(first())
       .subscribe(
-        () => { this.alert.success(); this.loader = false; },
+        () => { 
+          this.setRelations();
+          this.alert.success(); 
+          this.loader = false; 
+        },
         err => { this.alert.error(err); this.loader = false; }
       );
   }
@@ -361,14 +326,25 @@ export class UserDialogComponent implements OnInit {
   activeButton(action: string): boolean {
     switch (action) {
       case 'create':
-        return !this.route.id && this.formPerson.valid && this.formAccount.valid && this.formRelation.valid && !this.loader;
+        return !this.route.id && this.formPerson.valid && this.formAccount.valid && !this.loader;
       case 'update':
-        return this.route.id && this.formPerson.valid && this.formAccount.valid && this.formRelation.valid && !this.loader;
+        return this.route.id && this.formPerson.valid && this.formAccount.valid  && !this.loader;
       case 'delete':
         return this.route.id && !this.loader;
       default:
         return false;
     }
+  }
+
+  setRelations(id?: number){
+    let object: number[];
+    if(this.selectedR != null) { this.relation.path = 'region'; object = this.selectedR; }
+    if(this.selectedD != null) { this.relation.path = 'department'; object = this.selectedD; }
+    if(this.selectedE != null) { this.relation.path = 'establishment'; object = [this.selectedE]; }
+    if(id) this.relation.id = id;
+    object.forEach(relatedId => {
+      this.api.related(this.route, { ...this.relation, relatedId }).pipe(first()).subscribe(() => {});
+    });
   }
 
 }

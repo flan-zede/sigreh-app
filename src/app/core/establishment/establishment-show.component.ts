@@ -11,8 +11,8 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { Establishment } from 'src/app/model/establishment.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
+import { ESTABLISHMENT_NATURE } from 'src/app/shared/constant/form.constant';
 
 @Component({
   selector: 'app-establishment-show',
@@ -31,31 +31,21 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
     </div>
 
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'name'|translate }}</mat-label>
-          {{ item.name }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'nature'|translate }}</mat-label>
-          {{ item.nature }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'street'|translate }}</mat-label>
-          {{ item.street }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        <mat-label>{{ 'location'|translate }}</mat-label>
-          {{ item.location }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6 col-xs-12'>
-        <mat-label>{{ 'city'|translate }}</mat-label>
-          {{ item.cityID }}
-      </div>
-    </div>
+    <mat-card>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'name'|translate }}</b> <br> {{ item.name }}</div>
+            <div class='mb-1'><b>{{ 'nature'|translate }}</b> <br> {{ establishment_nature[item.nature] }}</div>
+            <div class='mb-1'><b>{{ 'city'|translate }}</b> <br> {{ item.city?.name }}</div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'municipality'|translate }}</b> <br> {{ item.municipality }}</div>
+            <div class='mb-1'><b>{{ 'location'|translate }}</b> <br> {{ item.location }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   `
 })
 export class EstablishmentShowComponent implements OnInit {
@@ -63,6 +53,7 @@ export class EstablishmentShowComponent implements OnInit {
   item = new Establishment();
   loader: boolean;
   route = ROUTE;
+  readonly establishment_nature = ESTABLISHMENT_NATURE;
   readonly dialog_config = DIALOG_CONFIG;
 
   constructor(

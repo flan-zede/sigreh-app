@@ -1,12 +1,10 @@
-﻿import { Subprefecture } from './subprefecture.model';
+﻿import { Department } from './department.model';
+import { Establishment } from './establishment.model';
 
 export class City {
   id: number;
   name: string;
-  subprefectureID: number;
-  districtCapital: boolean;
-  regionCapital: boolean;
-  departmentCapital: boolean;
-  subprefectureCapital: boolean;
-  subprefecture: Subprefecture;
+  departmentId: number;
+  department: Department;
+  establishments: Establishment[] = [];
 }

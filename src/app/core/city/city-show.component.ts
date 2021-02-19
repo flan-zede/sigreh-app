@@ -11,8 +11,7 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { City } from 'src/app/model/city.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
 
 @Component({
   selector: 'app-city-show',
@@ -20,46 +19,30 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
     <div class='d-flex justify-content-start mr-4 mb-2'>
       <button (click)='router.navigate([route.path])' mat-icon-button><mat-icon >keyboard_backspace</mat-icon></button>
     </div>
-    <div class='d-flex justify-content-end mr-4'>
+    <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
       <div class='d-flex flex-column'>
         <button (click)='router.navigate([route.path, "new"])' mat-mini-fab color='primary' class='mb-1'><mat-icon>add</mat-icon></button>
         <button (click)='router.navigate([route.path + "/edit", route.id])' mat-mini-fab color='primary' class='mb-1'><mat-icon>edit</mat-icon></button>
         <button (click)='delete()' mat-mini-fab color='primary' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
       </div>
     </div>
+
     <div class='d-flex justify-content-center mr-4 mb-2'>
       <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
     </div>
 
-    <div class='row'>
-      <div class='col-lg-3 col-md-12'>
-          <mat-label>{{ 'name'|translate }}</mat-label>
-          {{ item.name }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-label>{{ 'subprefecture'|translate }}</mat-label>
-          {{ item.subprefectureID }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-label>{{ 'district_capital'|translate }}</mat-label>
-          {{ item.districtCapital }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-label>{{ 'region_capital'|translate }}</mat-label>
-          {{ item.regionCapital }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-label>{{ 'department_capital'|translate }}</mat-label>
-          {{ item.departmentCapital }}
-      </div>
-      <div class='col-lg-2 col-xs-12'>
-        <mat-label>{{ 'subprefecture_capital'|translate }}</mat-label>
-          {{ item.subprefectureCapital }}
-      </div>
-    </div>
+    <mat-card class='mb-2'>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'name'|translate }}</b> <br> {{ item.name }}</div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'><b>{{ 'department'|translate }}</b> <br> {{ item.department?.name }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   `
 })
 export class CityShowComponent implements OnInit {

@@ -11,8 +11,8 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { User } from 'src/app/model/user.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
-import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
+import { ROUTE, USER_ROLE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
+import { IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE } from 'src/app/shared/constant/form.constant';
 
 @Component({
   selector: 'app-user-show',
@@ -31,121 +31,63 @@ import { DIALOG_CONFIG } from 'src/app/shared/constant/dialog-config.constant';
       <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
     </div>
 
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'firstname'|translate }}</mat-label>
-          {{ item.firstname }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'name'|translate }}</mat-label>
-          {{ item.name }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'birthdate'|translate }}</mat-label>
-          {{ item.birthdate }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'gender'|translate }}</mat-label>
-          {{ item.gender }}
-      </div>
-    </div>
+    <mat-card class='mb-2'>
+      <mat-card-header class='border-bottom border-secondary mb-2'>
+        <mat-card-title>{{ 'person_information'|translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'firstname'|translate }}</b> <br> {{ item.firstname }} </div>
+            <div class='mb-1'> <b>{{ 'name'|translate }}</b> <br> {{ item.name }} </div>
+            <div class='mb-1'> <b>{{ 'birthdate'|translate }}</b> <br> {{ item.birthdate | date:'mediumDate':'UTC' }} </div>
+            <div class='mb-1'> <b>{{ 'gender'|translate }}</b> <br> {{ gender[item.gender] }} </div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'nationality'|translate }}</b> <br> {{ nationality[item.nationality] }} </div>
+            <div class='mb-1'> <b>{{ 'idnumber'|translate }}</b> <br> {{ item.idnumber }} </div>
+            <div class='mb-1'> <b>{{ 'idnumber_nature'|translate }}</b> <br> {{ idnumber_nature[item.idnumberNature] }} </div>
+            <div class='mb-1'> <b>{{ 'phone'|translate }}</b> <br> {{ phone_type[item.phoneType] }} <{{ item.phone }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class='mb-2'>
+      <mat-card-header class='border-bottom border-secondary mb-2'>
+        <mat-card-title>{{ 'account_information'|translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'username'|translate }}</b> <br> {{ item.username }} </div>
+            <div class='mb-1'> <b>{{ 'email'|translate }}</b> <br> {{ item.email }} </div>
+          </div>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'blocked'|translate }}</b> <br> {{ item.blocked }} </div>
+            <div class='mb-1'> <b>{{ 'role'|translate }}</b> <br> {{ user_role[item.role] }} </div>
+          </div>
+        </div>
+        <div class='row'>
+          <div class='col-sm-6'>
+            <div class='mb-1'> <b>{{ 'created_at'|translate }}</b> <br> {{ item.createdAt | date:'mediumDate':'UTC' }} </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'nationality'|translate }}</mat-label>
-          {{ item.nationality }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'idnumber'|translate }}</mat-label>
-          {{ item.idnumber }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'idnumber_nature'|translate }}</mat-label>
-          {{ item.idnumberNature }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'phone'|translate }}</mat-label>
-          {{ item.phone }}
-        
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'username'|translate }}</mat-label>
-          {{ item.username }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'email'|translate }}</mat-label>
-          {{ item.email }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'password'|translate }}</mat-label>
-          {{ item.password }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'blocked'|translate }}</mat-label>
-          {{ item.blocked }}
-        
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-12'>
-        
-          <mat-label>{{ 'role'|translate }}</mat-label>
-          {{ item.role }}
-        
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'district'|translate }}</mat-label>
-          {{ item.districts }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-        
-          <mat-label>{{ 'region'|translate }}</mat-label>
-          {{ item.regions }}
-        
-      </div>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'department'|translate }}</mat-label>
-          {{ item.departments }}
-      </div>
-      <div class='col-lg-3 col-md-6'>
-          <mat-label>{{ 'subprefecture'|translate }}</mat-label>
-          {{ item.subprefectures }}
-      </div>
-    </div>
-
-    <div class='row'>
-      <div class='col-md-6'>
-          <mat-label>{{ 'city'|translate }}</mat-label>
-          {{ item.cities }}
-      </div>
-      <div class='col-md-6'>
-          <mat-label>{{ 'establishment'|translate }}</mat-label>
-          {{ item.establishments }}
-      </div>
-    </div>
+    <mat-card>
+      <mat-card-header class='border-bottom border-secondary mb-2'>
+        <mat-card-title>{{ 'relation_information'|translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class='row'>
+            <div class='col-lg-12' *ngIf='item.regions.length > 0'> <b>{{ 'region'|translate }}</b> <br> <span *ngFor='let el of item.regions'>{{ el.name }}, </span> </div>
+            <div class='col-lg-12' *ngIf='item.departments.length > 0'> <b>{{ 'department'|translate }}</b> <br> <span *ngFor='let el of item.departments'>{{ el.name }}, </span> </div>
+            <div class='col-lg-12' *ngIf='item.establishments.length > 0'> <b>{{ 'establishment'|translate }}</b> <br> <span *ngFor='let el of item.establishments'>{{ el.name }} </span> </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   `
 })
 export class UserShowComponent implements OnInit {
@@ -153,7 +95,13 @@ export class UserShowComponent implements OnInit {
   item = new User();
   loader: boolean;
   route = ROUTE;
-  readonly dialogConfig = DIALOG_CONFIG;
+  readonly user_role = USER_ROLE;
+  readonly idnumber_nature = IDNUMBER_NATURE;
+  readonly gender = GENDER;
+  readonly nationality = NATIONALITY;
+  readonly phone_type = PHONE_TYPE;
+  readonly dialog_config = DIALOG_CONFIG;
+  locale: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -163,8 +111,7 @@ export class UserShowComponent implements OnInit {
     private api: ApiService,
     private alert: AlertService
   ) {
-    this.route.path = 'user';
-    this.route.id = this.activatedRoute.snapshot.params?.id;
+    this.route = { path: 'user', id: this.activatedRoute.snapshot.params?.id };
   }
 
   ngOnInit(): void {

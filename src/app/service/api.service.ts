@@ -3,8 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from 'src/environments/environment';
-import { RouteInterface } from 'src/app/shared/interface/route.interface';
-import { PatchInterface } from 'src/app/shared/interface/patch.interface';
+import { RouteInterface, PatchInterface, RelationInterface } from 'src/app/shared/interface/app.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -23,6 +22,10 @@ export class ApiService {
     return this.http.get(`${environment.api}/${route.path}?sort=${route.sort}`);
   }
 
+  findMultiple(route: RouteInterface): Observable<any> {
+    return this.http.get(`${environment.api}/${route.path}/multiple/${route.ids}`);
+  }
+
   create(route: RouteInterface, data: any): Observable<any> {
     return this.http.post(`${environment.api}/${route.path}`, data);
   }
@@ -37,6 +40,10 @@ export class ApiService {
 
   delete(route: RouteInterface, id: number): Observable<any> {
     return this.http.delete(`${environment.api}/${route.path}/${id}`);
+  }
+
+  related(route: RouteInterface, data: RelationInterface): Observable<any> {
+    return this.http.post(`${environment.api}/${route.path}/relation`, data);
   }
 
   queryParam(route: RouteInterface) {

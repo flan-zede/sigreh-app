@@ -14,7 +14,7 @@ import { User } from 'src/app/model/user.model';
         <div class='w-100 d-flex'>
             <button mat-button (click)='router.navigate(["/"])'>
                 <img src='assets/icons/logo.png' height='38' class='mr-2'/>
-                <span>SIGREH</span>
+                <span class='d-none d-md-inline-block'>SIGREH</span>
             </button>
             <button mat-button (click)='toggleSideBar()'>
                 <mat-icon>apps</mat-icon>
@@ -45,7 +45,7 @@ import { User } from 'src/app/model/user.model';
 </mat-toolbar>
 <mat-toolbar>
     <mat-toolbar-row>
-        <app-top-navigation class='w-100'></app-top-navigation>
+        <app-top-navigation class='w-100 overflow-auto'></app-top-navigation>
     </mat-toolbar-row>
 </mat-toolbar>
 `
@@ -60,10 +60,7 @@ export class HeaderComponent {
     public trans: TranslateService,
     public auth: AuthService
   ) {
-    this.user = this.auth.getCredential()?.user;
-    trans.addLangs(['en', 'fr']);
-    trans.setDefaultLang('en');
-    trans.use(trans.getBrowserLang().match(/en|fr/) ? trans.getBrowserLang() : 'fr');
+    this.user = this.auth.getCredential().user;
   }
 
   logout(): void {

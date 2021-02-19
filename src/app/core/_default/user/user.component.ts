@@ -12,7 +12,8 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { User } from 'src/app/model/user.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
+import { PageResponseInterface } from 'src/app/shared/interface/app.interface';
+import { ROUTE, USER_ROLE } from 'src/app/shared/constant/app.constant';
 
 @Component({
   selector: 'app-user',
@@ -37,14 +38,18 @@ import { ROUTE } from 'src/app/shared/constant/route.constant';
           <mat-card-content>
             <div class='d-flex'>
               <div class='flex-grow-1' (click)='router.navigate([route.path + "/show", item.id])'>
-                <b>{{ item.phone }}</b>&nbsp;<span>{{ item.firstname }} {{ item.name }}</span>
+                <span>{{ item.firstname }} {{ item.name }} . {{ item.phone }}</span>
               </div>
-              <button mat-flat-button (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon></button>
-              <button mat-flat-button (click)='delete(item.id)'><mat-icon>delete</mat-icon></button>
+              <button mat-button [matMenuTriggerFor]='optionMenu'><mat-icon>more_horiz</mat-icon></button>
+              <mat-menu #optionMenu='matMenu'>
+                <span mat-menu-item (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
+                <span mat-menu-item (click)='delete(item.id)'><mat-icon>delete</mat-icon>{{ 'delete'|translate}}</span>
+              </mat-menu>
             </div>
-            <div class='d-flex'>
+            <div class='d-flex' (click)='router.navigate([route.path + "/show", item.id])'>
               <div class='flex-grow-1'>
-                <div (click)='router.navigate([route.path + "/show", item.id])' >{{ '' }}</div>
+                <div><b>{{ 'role'|translate}}</b> . {{ user_role[item.role] }}</div>
+                <div><b>{{ 'blocked'|translate}}</b> . {{ item.blocked|translate }}</div>
               </div>
               <small class='text-muted'>{{ item.createdAt | date }}</small>
             </div>
@@ -69,6 +74,7 @@ export class UserComponent implements OnInit {
   items: User[] = null;
   loader: boolean;
   route = ROUTE;
+  readonly user_role = USER_ROLE;
 
   constructor(
     public router: Router,
@@ -88,7 +94,7 @@ export class UserComponent implements OnInit {
     this.loader = true;
     this.api.find(this.route).pipe(first())
       .subscribe(
-        res => { this.items = res.data; this.loader = false; },
+        (res: PageResponseInterface) => { this.items = res.data; this.loader = false; },
         err => { this.alert.error(err); this.loader = false; }
       );
   }
@@ -98,7 +104,7 @@ export class UserComponent implements OnInit {
     if (query) { this.route.search = query; this.items = []; }
     this.api.find(this.route).pipe(first())
       .subscribe(
-        res => { this.items = this.items.concat(res.data); this.loader = false; },
+        (res: PageResponseInterface) => { this.items = this.items.concat(res.data); this.loader = false; },
         err => { this.alert.error(err); this.loader = false; }
       );
   }

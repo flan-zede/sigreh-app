@@ -1,10 +1,10 @@
 ﻿import { Region } from './region.model';
-import { Subprefecture } from './subprefecture.model';
+import { User } from './user.model';
 
 export class Department {
   id: number;
   name: string;
-  regionID: number;
+  regionId: number;
   region: Region;
-  subprefectures: Subprefecture[] = [];
+  users: User[] = [];
 }

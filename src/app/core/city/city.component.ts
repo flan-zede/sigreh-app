@@ -12,7 +12,8 @@ import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.co
 
 import { City } from 'src/app/model/city.model';
 
-import { ROUTE } from 'src/app/shared/constant/route.constant';
+import { ROUTE } from 'src/app/shared/constant/app.constant';
+import { PageResponseInterface } from 'src/app/shared/interface/app.interface';
 
 @Component({
   selector: 'app-city',
@@ -36,15 +37,16 @@ import { ROUTE } from 'src/app/shared/constant/route.constant';
         <mat-card>
           <mat-card-content>
             <div class='d-flex'>
-              <div class='flex-grow-1' (click)='router.navigate([route.path + "/show", item.id])'>
-                <span>{{ item.name }}</span>
-              </div>
-              <button mat-flat-button (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon></button>
-              <button mat-flat-button (click)='delete(item.id)'><mat-icon>delete</mat-icon></button>
+              <div class='flex-grow-1' (click)='router.navigate([route.path + "/show", item.id])'><span>{{ item.name }}</span></div>
+              <button mat-button [matMenuTriggerFor]='optionMenu'><mat-icon>more_horiz</mat-icon></button>
+              <mat-menu #optionMenu='matMenu'>
+                <span mat-menu-item (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
+                <span mat-menu-item (click)='delete(item.id)'><mat-icon>delete</mat-icon>{{ 'delete'|translate}}</span>
+              </mat-menu>
             </div>
             <div class='d-flex'>
               <div class='flex-grow-1'>
-                <div (click)='router.navigate([route.path + "/show", item.id])' >{{ '' }}</div>
+                <div (click)='router.navigate([route.path + "/show", item.id])'><b>{{ 'department'|translate}}</b> . {{ item.department?.name }}</div>
               </div>
             </div>
           </mat-card-content>
@@ -87,7 +89,7 @@ export class CityComponent implements OnInit {
     this.loader = true;
     this.api.find(this.route).pipe(first())
       .subscribe(
-        res => { this.items = res.data; this.loader = false; },
+        (res: PageResponseInterface) => { this.items = res.data; this.loader = false; },
         err => { this.alert.error(err); this.loader = false; }
       );
   }
@@ -97,7 +99,7 @@ export class CityComponent implements OnInit {
     if (query) { this.route.search = query; this.items = []; }
     this.api.find(this.route).pipe(first())
       .subscribe(
-        res => { this.items = this.items.concat(res.data); this.loader = false; },
+        (res: PageResponseInterface) => { this.items = this.items.concat(res.data); this.loader = false; },
         err => { this.alert.error(err); this.loader = false; }
       );
   }
