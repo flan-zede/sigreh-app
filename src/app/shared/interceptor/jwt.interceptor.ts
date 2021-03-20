@@ -5,10 +5,9 @@ import { environment } from 'src/environments/environment';
 
 import { AuthService } from 'src/app/service/auth.service';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export class JwtInterceptor implements HttpInterceptor {
 
   constructor(
     private auth: AuthService,
@@ -22,19 +21,6 @@ export class AuthInterceptor implements HttpInterceptor {
       request = request.clone({ setHeaders: { Authorization: `Bearer ${credential?.jwt}` } });
     }
 
-    return next.handle(request)
-      .pipe(
-        tap(
-          (event: HttpEvent<any>) => { },
-          (err: any) => {
-            if (err instanceof HttpErrorResponse) {
-              if (err.status === 401) {
-                this.auth.logout();
-                this.router.navigate(['auth']);
-              }
-            }
-          }
-        )
-      );
+    return next.handle(request);
   }
 }

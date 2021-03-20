@@ -6,9 +6,6 @@ import { ClientComponent } from './client.component';
 import { ClientShowComponent } from './client-show.component';
 import { ClientDialogComponent } from './client-dialog.component';
 
-import { UserRoleGuard } from 'src/app/shared/guard/user-role.guard';
-import { USER_ROLE_HIERARCHY } from 'src/app/shared/constant/app.constant';
-
 const routes: Routes = [
   {
     path: '',
@@ -20,9 +17,7 @@ const routes: Routes = [
       },
       {
         path: 'new',
-        component: ClientDialogComponent,
-        canActivate: [UserRoleGuard],
-        data: { roles: USER_ROLE_HIERARCHY.REH }
+        component: ClientDialogComponent
       },
       {
         path: 'show/:id',
@@ -30,9 +25,7 @@ const routes: Routes = [
       },
       {
         path: 'edit/:id',
-        component: ClientDialogComponent,
-        canActivate: [UserRoleGuard],
-        data: { roles: USER_ROLE_HIERARCHY.ADMIN }
+        component: ClientDialogComponent
       }
     ]
   },

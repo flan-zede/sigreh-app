@@ -23,8 +23,8 @@ export class Client {
   bedroomType: string;
   
   enterDate: Date;
-  createdAt: Date;
-  
+  enterTime: string;
+
   partners: Partner[];
 
   establishmentId: number;
@@ -32,4 +32,7 @@ export class Client {
 
   establishment: Establishment;
   user: User;
+  
+  createdAt: Date;
+  updatedAt: Date;
 }

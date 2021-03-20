@@ -1,144 +1,90 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
 
-import { ApiService } from 'src/app/service/api.service';
-import { AlertService } from 'src/app/service/alert.service';
-
-import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.component';
-
-import { User } from 'src/app/model/user.model';
-
-import { ROUTE, USER_ROLE, DIALOG_CONFIG } from 'src/app/shared/constant/app.constant';
-import { IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE } from 'src/app/shared/constant/form.constant';
+import { AuthService, CrudService } from 'src/app/service';
+import { User } from 'src/app/model';
+import { USER_ROLE, IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE } from 'src/app/shared/constant';
 
 @Component({
   selector: 'app-user-show',
   template: `
-    <div class='d-flex justify-content-start mr-4 mb-2'>
-      <button (click)='router.navigate([route.path])' mat-icon-button><mat-icon >keyboard_backspace</mat-icon></button>
-    </div>
-    <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
-      <div class='d-flex flex-column'>
-        <button (click)='router.navigate([route.path, "new"])' mat-mini-fab color='primary' class='mb-1'><mat-icon>add</mat-icon></button>
-        <button (click)='router.navigate([route.path + "/edit", route.id])' mat-mini-fab color='primary' class='mb-1'><mat-icon>edit</mat-icon></button>
-        <button (click)='delete()' mat-mini-fab color='primary' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
+    <app-view-option [ability]='auth.ability()' [count]='-1' [route]='crud.route' [load]='crud.load' (delete)='crud.delete().subscribe()'></app-view-option>
+
+    <h3 class='border-bottom'>{{ 'person_information'|translate }}</h3>
+    <div class='row mb-2'>
+      <div class='col-sm-6'>
+        <div class='mb-1'> <b>{{ 'firstname'|translate }}</b> <br> {{ item.firstname }} </div>
+        <div class='mb-1'> <b>{{ 'name'|translate }}</b> <br> {{ item.name }} </div>
+        <div class='mb-1'> <b>{{ 'birthdate'|translate }}</b> <br> {{ item.birthdate | date:'mediumDate':'UTC' }} </div>
+        <div class='mb-1'> <b>{{ 'gender'|translate }}</b> <div *ngFor='let p of gender'><span *ngIf='p.id == item.gender'>{{ p.name }}</span></div></div>
+      </div>
+      <div class='col-sm-6'>
+        <div class='mb-1'> <b>{{ 'nationality'|translate }}</b> <div *ngFor='let p of nationality'><span *ngIf='p.id == item.nationality'>{{ p.name }}</span></div></div>
+        <div class='mb-1'> <b>{{ 'idnumber'|translate }}</b> <br> {{ item.idnumber }} </div>
+        <div class='mb-1'> <b>{{ 'idnumber_nature'|translate }}</b> <div *ngFor='let p of idnumber_nature'><span *ngIf='p.id == item.idnumberNature'>{{ p.name }}</span></div></div>
+        <div class='mb-1'> <b>{{ 'phone'|translate }}</b> <div *ngFor='let p of phone_type'><span *ngIf='p.id == item.phoneType'>{{ p.name }} . {{ item.phone }}</span></div></div>
       </div>
     </div>
-    <div class='d-flex justify-content-center mr-4 mb-2'>
-      <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
+    
+    <h3 class='border-bottom'>{{ 'account_information'|translate }} <mat-icon inline='true' *ngIf='!item.active'>lock</mat-icon></h3>
+    <div class='row mb-2'>
+      <div class='col-sm-6'>
+        <div class='mb-1'> <b>{{ 'username'|translate }}</b> <br> {{ item.username }}</div>
+        <div class='mb-1'> <b>{{ 'email'|translate }}</b> <br> {{ item.email }} </div>
+        <div class='mb-1'> <b>{{ 'role'|translate }}</b> <div *ngFor='let p of user_role'><span *ngIf='p.id == item.role'>{{ p.name }}</span></div></div>
+      </div>
+      <div class='col-sm-6'>
+        <div class='mb-1'> <b>{{ 'created_at'|translate }}</b> <br> {{ item.createdAt | date:'mediumDate':'UTC' }} </div>
+        <div class='mb-1'> <b>{{ 'updated_at'|translate }}</b> <br> {{ item.updatedAt | date:'mediumDate':'UTC' }} </div>
+      </div>
     </div>
 
-    <mat-card class='mb-2'>
-      <mat-card-header class='border-bottom border-secondary mb-2'>
-        <mat-card-title>{{ 'person_information'|translate }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class='row'>
-          <div class='col-sm-6'>
-            <div class='mb-1'> <b>{{ 'firstname'|translate }}</b> <br> {{ item.firstname }} </div>
-            <div class='mb-1'> <b>{{ 'name'|translate }}</b> <br> {{ item.name }} </div>
-            <div class='mb-1'> <b>{{ 'birthdate'|translate }}</b> <br> {{ item.birthdate | date:'mediumDate':'UTC' }} </div>
-            <div class='mb-1'> <b>{{ 'gender'|translate }}</b> <br> {{ gender[item.gender] }} </div>
-          </div>
-          <div class='col-sm-6'>
-            <div class='mb-1'> <b>{{ 'nationality'|translate }}</b> <br> {{ nationality[item.nationality] }} </div>
-            <div class='mb-1'> <b>{{ 'idnumber'|translate }}</b> <br> {{ item.idnumber }} </div>
-            <div class='mb-1'> <b>{{ 'idnumber_nature'|translate }}</b> <br> {{ idnumber_nature[item.idnumberNature] }} </div>
-            <div class='mb-1'> <b>{{ 'phone'|translate }}</b> <br> {{ phone_type[item.phoneType] }} <{{ item.phone }}</div>
-          </div>
+    <h3 class='border-bottom' *ngIf='["DRMT","DDMT","PP","REH","GEH"].includes(item.role)'>{{ 'relation_information'|translate }}</h3>
+    <div class='row'>
+      <div class='col-lg-12'> 
+        <div *ngIf='["DRMT"].includes(item.role)'>
+          <mat-chip-list>
+            <mat-chip *ngFor='let p of item.regions'>{{ p.name }}</mat-chip>
+          </mat-chip-list>
         </div>
-      </mat-card-content>
-    </mat-card>
-    
-    <mat-card class='mb-2'>
-      <mat-card-header class='border-bottom border-secondary mb-2'>
-        <mat-card-title>{{ 'account_information'|translate }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class='row'>
-          <div class='col-sm-6'>
-            <div class='mb-1'> <b>{{ 'username'|translate }}</b> <br> {{ item.username }} </div>
-            <div class='mb-1'> <b>{{ 'email'|translate }}</b> <br> {{ item.email }} </div>
-          </div>
-          <div class='col-sm-6'>
-            <div class='mb-1'> <b>{{ 'blocked'|translate }}</b> <br> {{ item.blocked }} </div>
-            <div class='mb-1'> <b>{{ 'role'|translate }}</b> <br> {{ user_role[item.role] }} </div>
-          </div>
+        <div *ngIf='["DDMT","PP"].includes(item.role)'>
+          <mat-chip-list>
+            <mat-chip *ngFor='let p of item.departments'>{{ p.name }}</mat-chip>
+          </mat-chip-list>
         </div>
-        <div class='row'>
-          <div class='col-sm-6'>
-            <div class='mb-1'> <b>{{ 'created_at'|translate }}</b> <br> {{ item.createdAt | date:'mediumDate':'UTC' }} </div>
-          </div>
+        <div *ngIf='["REH","GEH"].includes(item.role)'>
+          <mat-chip-list>
+            <mat-chip *ngFor='let p of item.establishments'>{{ p.name }}</mat-chip>
+          </mat-chip-list>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
 
-    <mat-card>
-      <mat-card-header class='border-bottom border-secondary mb-2'>
-        <mat-card-title>{{ 'relation_information'|translate }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class='row'>
-            <div class='col-lg-12' *ngIf='item.regions.length > 0'> <b>{{ 'region'|translate }}</b> <br> <span *ngFor='let el of item.regions'>{{ el.name }}, </span> </div>
-            <div class='col-lg-12' *ngIf='item.departments.length > 0'> <b>{{ 'department'|translate }}</b> <br> <span *ngFor='let el of item.departments'>{{ el.name }}, </span> </div>
-            <div class='col-lg-12' *ngIf='item.establishments.length > 0'> <b>{{ 'establishment'|translate }}</b> <br> <span *ngFor='let el of item.establishments'>{{ el.name }} </span> </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <br>
   `
 })
 export class UserShowComponent implements OnInit {
 
   item = new User();
-  loader: boolean;
-  route = ROUTE;
   readonly user_role = USER_ROLE;
   readonly idnumber_nature = IDNUMBER_NATURE;
   readonly gender = GENDER;
   readonly nationality = NATIONALITY;
   readonly phone_type = PHONE_TYPE;
-  readonly dialog_config = DIALOG_CONFIG;
-  locale: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    private dialog: MatDialog,
-    public trans: TranslateService,
-    private api: ApiService,
-    private alert: AlertService
+    public auth: AuthService,
+    public crud: CrudService
   ) {
-    this.route = { path: 'user', id: this.activatedRoute.snapshot.params?.id };
+    this.crud.route.path = 'user';
+    this.crud.route.id = this.activatedRoute.snapshot.params?.id;
   }
 
   ngOnInit(): void {
-    if (this.route.id) {
-      this.loader = true;
-      this.api.findOne(this.route).pipe(first())
-        .subscribe(
-          (item: User) => { this.item = item; this.loader = false; },
-          err => { this.alert.error(err); this.loader = false; }
-        );
-    }
-  }
-
-  delete(): void {
-    this.dialog.open(AlertConfirmComponent, { data: { message: this.trans.get('confirm.delete') } }).afterClosed()
-      .subscribe(
-        res => {
-          if (res) {
-            this.loader = true;
-            this.api.delete(this.route, this.route.id).pipe(first())
-              .subscribe(
-                () => { this.alert.success(); this.router.navigate([this.route.path]); this.loader = false; },
-                err => { this.alert.error(err); this.loader = false; }
-              );
-          }
-        }
-      );
+    this.crud.readOne().pipe(first()).subscribe((item: User) => this.item = item);
   }
 
 }

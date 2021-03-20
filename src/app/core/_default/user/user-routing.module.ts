@@ -6,8 +6,8 @@ import { UserComponent } from './user.component';
 import { UserShowComponent } from './user-show.component';
 import { UserDialogComponent } from './user-dialog.component';
 
-import { UserRoleGuard } from 'src/app/shared/guard/user-role.guard';
-import { USER_ROLE_HIERARCHY } from 'src/app/shared/constant/app.constant';
+import { UserRoleGuard } from 'src/app/shared/guard';
+import { USER_ROLE } from 'src/app/shared/constant';
 
 const routes: Routes = [
   {

@@ -1,26 +1,15 @@
-import { RouteInterface, MenuItemInterface } from 'src/app/shared/interface/app.interface';
+import { RouteInterface, MenuItemInterface, ListItemInterface } from 'src/app/shared/interface';
 
-export const USER_ROLE = {
-    'reh': 'Receptionist d\'etablissement hotelier',
-    'geh': 'Gerant d\'etablissement hotelier',
-    'pp': 'Responsable de Préfecture de police',
-    'ddmt': 'Directeur départementale du ministère du tourisme',
-    'drmt': 'Directeur régionale du ministère du tourisme',
-    'dsmt': 'Directeur de la statistique du ministère du tourisme',
-    'smi': 'Responsable sureté, ministère de l\interieur',
-    'admin': 'Administrateur'
-};
-
-export const USER_ROLE_HIERARCHY = {
-    REH: ['reh'],
-    GEH: ['geh', 'reh', 'pp', 'ddmt', 'drmt', 'dsmt', 'smi', 'admin'],
-    PP: ['pp', 'ddmt', 'drmt', 'dsmt', 'smi', 'admin'],
-    DDMT: ['ddmt', 'drmt', 'dsmt', 'smi', 'admin'],
-    DRMT: ['drmt', 'dsmt', 'smi', 'admin'],
-    DSMT: ['dsmt', 'smi', 'admin'],
-    SMI: ['smi', 'admin'],
-    ADMIN: ['admin'],
-};
+export const USER_ROLE: ListItemInterface[] = [
+    { id: 'REH',   name: 'Receptionist d\'etablissement hotelier' },
+    { id: 'GEH',   name: 'Gerant d\'etablissement hotelier' },
+    { id: 'PP',    name: 'Responsable de Préfecture de police' },
+    { id: 'DDMT',  name: 'Directeur départementale du ministère du tourisme' },
+    { id: 'DRMT',  name: 'Directeur régionale du ministère du tourisme' },
+    { id: 'DSMT',  name: 'Directeur de la statistique du ministère du tourisme' },
+    { id: 'SMI',   name: 'Responsable sureté, ministère de l\'interieur' },
+    { id: 'ADMIN', name: 'Administrateur' }
+];
 
 export const ROUTE: RouteInterface = {
     path: null,
@@ -33,23 +22,21 @@ export const ROUTE: RouteInterface = {
         sizeOptions: [10, 50, 100, 200],
         showFirstLastButtons: true,
         index: 1
-    }
+    },
+    relates: [],
+    patches: []
 };
 
 export const MENU_ITEM: MenuItemInterface[] = [
-    { route: '/client', name: 'client', icon: '', disabled: null, roles: USER_ROLE_HIERARCHY.GEH },
-    { route: '/user', name: 'user', icon: '', disabled: null, roles: USER_ROLE_HIERARCHY.ADMIN },
-    { route: '/city', name: 'city', icon: '', disabled: null, roles: USER_ROLE_HIERARCHY.ADMIN },
-    { route: '/establishment', name: 'establishment', icon: '', disabled: null, roles: USER_ROLE_HIERARCHY.ADMIN },
+    { route: '/client', name: 'client', icon: '' },
+    { route: '/user', name: 'user', icon: '' },
+    { route: '/city', name: 'city', icon: '' },
+    { route: '/establishment', name: 'establishment', icon: '' },
 ];
 
 export const DIALOG_CONFIG = {
     disableClose: false,
-    height: '100vh',
-    width: '100vw',
     minHeight: '100vh',
     minWidth: '100vw',
     autoFocus: false
 };
-
-

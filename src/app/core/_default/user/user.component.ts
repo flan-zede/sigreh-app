@@ -1,136 +1,87 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { first } from 'rxjs/operators';
-import { PageEvent } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
 
-import { ApiService } from 'src/app/service/api.service';
-import { AlertService } from 'src/app/service/alert.service';
-
-import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.component';
-
-import { User } from 'src/app/model/user.model';
-
-import { PageResponseInterface } from 'src/app/shared/interface/app.interface';
-import { ROUTE, USER_ROLE } from 'src/app/shared/constant/app.constant';
+import { AuthService, CrudService } from 'src/app/service';
+import { User } from 'src/app/model';
+import { USER_ROLE } from 'src/app/shared/constant';
 
 @Component({
   selector: 'app-user',
   template: `
-    <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
-      <button (click)='router.navigate([route.path, "new"])' mat-mini-fab color='primary' class='mb-1'><mat-icon>add</mat-icon></button>
-    </div>
+    <app-search-bar (return)='read()' (query)='search($event)'></app-search-bar>
+    <app-view-option [ability]='auth.ability()' [count]='items.length' [route]='crud.route' [load]='crud.load'></app-view-option>
 
-    <app-search-bar (return)='find()' (query)='search($event)'></app-search-bar>
-
-    <div class='d-flex justify-content-center r-4 mb-2'>
-      <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
-    </div>
-
-    <div class='d-flex justify-content-center align-items-center'>
-      <div *ngIf='!loader && items?.length == 0'>{{ 'no_data'|translate }}</div>
-    </div>
-
-    <div class='row' *ngIf='items?.length > 0'>
-      <div class='col-lg-12 mb-2' *ngFor='let item of items; trackBy: trackFn'>
-        <mat-card>
-          <mat-card-content>
-            <div class='d-flex'>
-              <div class='flex-grow-1' (click)='router.navigate([route.path + "/show", item.id])'>
-                <span>{{ item.firstname }} {{ item.name }} . {{ item.phone }}</span>
+    <div *ngIf='items.length > 0'>
+      <div class='row'>
+        <div class='col-lg-12' *ngFor='let item of items; trackBy: crud.trackFn'>
+          <div class='d-flex mat-card mb-2 p-2'>
+            <div class='flex-grow-1' (click)='router.navigate([crud.route.path + "/show", item.id])'>
+              <span class='font-weight-bold'>{{ item.firstname }} {{ item.name }} </span> . {{ item.username }}
+              <div> 
+                <mat-icon inline='true'>email</mat-icon> {{ item.email }}
+                <mat-icon inline='true'>phone</mat-icon> {{ item.phone }}
               </div>
-              <button mat-button [matMenuTriggerFor]='optionMenu'><mat-icon>more_horiz</mat-icon></button>
+              <span *ngFor='let p of user_role'><span *ngIf='p.id == item.role'>{{ p.name }}</span></span>
+              <div *ngIf='["DRMT"].includes(item.role)'>
+                <mat-chip-list>
+                  <mat-chip *ngFor='let p of item.regions'>{{ p.name }}</mat-chip>
+                </mat-chip-list>
+              </div>
+              <div *ngIf='["DDMT","PP"].includes(item.role)'>
+                <mat-chip-list>
+                  <mat-chip *ngFor='let p of item.departments'>{{ p.name }}</mat-chip>
+                </mat-chip-list>
+              </div>
+              <div *ngIf='["REH","GEH"].includes(item.role)'>
+                <mat-chip-list>
+                  <mat-chip *ngFor='let p of item.establishments'>{{ p.name }}</mat-chip>
+                </mat-chip-list>
+              </div>
+            </div>
+            <div class='d-flex flex-column'>
+              <mat-icon [matMenuTriggerFor]='optionMenu'>more_horiz</mat-icon>
               <mat-menu #optionMenu='matMenu'>
-                <span mat-menu-item (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
+                <span mat-menu-item (click)='router.navigate([crud.route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
                 <span mat-menu-item (click)='delete(item.id)'><mat-icon>delete</mat-icon>{{ 'delete'|translate}}</span>
               </mat-menu>
+              <small class='text-muted'>{{ item.createdAt | date:'mediumDate':'UTC' }}</small>
             </div>
-            <div class='d-flex' (click)='router.navigate([route.path + "/show", item.id])'>
-              <div class='flex-grow-1'>
-                <div><b>{{ 'role'|translate}}</b> . {{ user_role[item.role] }}</div>
-                <div><b>{{ 'blocked'|translate}}</b> . {{ item.blocked|translate }}</div>
-              </div>
-              <small class='text-muted'>{{ item.createdAt | date }}</small>
-            </div>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </div>
       </div>
-      <div class='col-lg-12 mb-2'>
-        <mat-paginator
-            (page)='handlePageEvent($event)'
-            [length]='route.page.length'
-            [pageSize]='route.page.size'
-            [showFirstLastButtons]='route.page.showFirstLastButtons'
-            [pageSizeOptions]='route.page.sizeOptions'
-            [pageIndex]='route.page.index'>
-        </mat-paginator>
-      </div>
+      <app-paginator [route]='crud.route' (paginate)='crud.route = $event; read()'></app-paginator>
     </div>
 `
 })
 export class UserComponent implements OnInit {
 
-  items: User[] = null;
-  loader: boolean;
-  route = ROUTE;
+  items: User[] = [];
   readonly user_role = USER_ROLE;
 
   constructor(
     public router: Router,
-    protected dialog: MatDialog,
-    public trans: TranslateService,
-    protected api: ApiService,
-    public alert: AlertService
+    public auth: AuthService,
+    public crud: CrudService
   ) {
-    this.route.path = 'user';
+    this.crud.route.path = 'user';
   }
 
   ngOnInit(): void {
-    this.find();
+    this.read();
   }
 
-  find(): void {
-    this.loader = true;
-    this.api.find(this.route).pipe(first())
-      .subscribe(
-        (res: PageResponseInterface) => { this.items = res.data; this.loader = false; },
-        err => { this.alert.error(err); this.loader = false; }
-      );
+  read(): void {
+    this.crud.read().pipe(first()).subscribe(item => this.items = item.data);
+  }
+
+  delete(id: number) {
+    this.crud.delete(id).subscribe(() => this.items = this.items.filter(item => item.id != id));
   }
 
   search(query?: string): void {
-    this.loader = true;
-    if (query) { this.route.search = query; this.items = []; }
-    this.api.find(this.route).pipe(first())
-      .subscribe(
-        (res: PageResponseInterface) => { this.items = this.items.concat(res.data); this.loader = false; },
-        err => { this.alert.error(err); this.loader = false; }
-      );
+    if (query) { this.crud.route.search = query; this.items = []; }
+    this.crud.read().pipe(first()).subscribe(item => this.items = this.items.concat(item.data));
   }
 
-  delete(id: number): void {
-    this.dialog.open(AlertConfirmComponent, { data: { message: this.trans.get('confirm.delete') } }).afterClosed()
-      .subscribe(
-        res => {
-          if (res) {
-            this.loader = true;
-            this.api.delete(this.route, id).pipe(first())
-              .subscribe(
-                () => { this.items = this.items.filter(item => item.id !== id); this.loader = false; },
-                err => { this.alert.error(err); this.loader = false; }
-              );
-          }
-        }
-      );
-  }
-
-  trackFn = (i: number, item: any) => item.id;
-
-  handlePageEvent(event: PageEvent): void {
-    this.route.page.length = event.length;
-    this.route.page.size = event.pageSize;
-    this.route.page.index = event.pageIndex;
-    this.find();
-  }
 }

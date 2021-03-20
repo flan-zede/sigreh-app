@@ -1,134 +1,68 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { first } from 'rxjs/operators';
-import { PageEvent } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
 
-import { ApiService } from 'src/app/service/api.service';
-import { AlertService } from 'src/app/service/alert.service';
-
-import { AlertConfirmComponent } from 'src/app/shared/component/alert-confirm.component';
-
-import { Establishment } from 'src/app/model/establishment.model';
-
-import { ROUTE } from 'src/app/shared/constant/app.constant';
-import { PageResponseInterface } from 'src/app/shared/interface/app.interface';
-import { ESTABLISHMENT_NATURE } from 'src/app/shared/constant/form.constant';
+import { AuthService, CrudService } from 'src/app/service';
+import { Establishment } from 'src/app/model';
+import { ESTABLISHMENT_NATURE } from 'src/app/shared/constant';
 
 @Component({
   selector: 'app-establishment',
   template: `
-    <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
-      <button (click)='router.navigate([route.path, "new"])' mat-mini-fab color='primary' class='mb-1'><mat-icon>add</mat-icon></button>
-    </div>
+    <app-search-bar (return)='read()' (query)='search($event)'></app-search-bar>
+    <app-view-option [ability]='auth.ability()' [count]='items.length' [route]='crud.route' [load]='crud.load'></app-view-option>
 
-    <app-search-bar (return)='find()' (query)='search($event)'></app-search-bar>
-
-    <div class='d-flex justify-content-center mr-4 mb-2'>
-      <mat-progress-spinner *ngIf='loader' mode='indeterminate' [diameter]='20'></mat-progress-spinner>
-    </div>
-
-    <div class='d-flex justify-content-center align-items-center'>
-      <div *ngIf='!loader && items?.length == 0'>{{ 'no_data'|translate }}</div>
-    </div>
-
-    <div class='row' *ngIf='items?.length > 0'>
-      <div class='col-lg-12 mb-2' *ngFor='let item of items; trackBy: trackFn'>
-        <mat-card>
-          <mat-card-content>
-            <div class='d-flex'>
-              <div class='flex-grow-1' (click)='router.navigate([route.path + "/show", item.id])'><span>{{ item.name }} . {{ establishment_nature[item.nature] }}</span></div>
-              <button mat-button [matMenuTriggerFor]='optionMenu'><mat-icon>more_horiz</mat-icon></button>
+    <div *ngIf='items.length > 0'>
+      <div class='row'>
+        <div class='col-lg-12' *ngFor='let item of items; trackBy: crud.trackFn'>
+          <div class='d-flex mat-card mb-2 p-2'>
+            <div class='flex-grow-1' (click)='router.navigate([crud.route.path + "/show", item.id])'>
+              <span>{{ item.name }}</span>
+              <div *ngFor='let p of establishment_nature'><span *ngIf='p.id == item.nature'>{{ p.name }}</span></div>
+              <div>{{ item.city?.name }} . {{ item.municipality }}</div>
+            </div>
+            <div>
+              <mat-icon [matMenuTriggerFor]='optionMenu'>more_horiz</mat-icon>
               <mat-menu #optionMenu='matMenu'>
-                <span mat-menu-item (click)='router.navigate([route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
+                <span mat-menu-item (click)='router.navigate([crud.route.path + "/edit", item.id])'><mat-icon>edit</mat-icon>{{ 'edit'|translate}}</span>
                 <span mat-menu-item (click)='delete(item.id)'><mat-icon>delete</mat-icon>{{ 'delete'|translate}}</span>
               </mat-menu>
             </div>
-            <div class='d-flex' (click)='router.navigate([route.path + "/show", item.id])'>
-              <div class='flex-grow-1'>
-                <div><b>{{ 'city'|translate}}</b> . {{ item.city?.name }}</div>
-                <div><b>{{ 'municipality'|translate}}</b> . {{ item.municipality }}</div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </div>
       </div>
-      <div class='col-lg-12 mb-2'>
-        <mat-paginator
-            (page)='handlePageEvent($event)'
-            [length]='route.page.length'
-            [pageSize]='route.page.size'
-            [showFirstLastButtons]='route.page.showFirstLastButtons'
-            [pageSizeOptions]='route.page.sizeOptions'
-            [pageIndex]='route.page.index'>
-        </mat-paginator>
-      </div>
+      <app-paginator [route]='crud.route' (paginate)='crud.route = $event; read()'></app-paginator>
     </div>
 `
 })
 export class EstablishmentComponent implements OnInit {
 
-  items: Establishment[] = null;
-  loader: boolean;
-  route = ROUTE;
+  items: Establishment[] = [];
   readonly establishment_nature = ESTABLISHMENT_NATURE;
 
   constructor(
     public router: Router,
-    protected dialog: MatDialog,
-    public trans: TranslateService,
-    protected api: ApiService,
-    public alert: AlertService
+    public auth: AuthService,
+    public crud: CrudService
   ) {
-    this.route.path = 'establishment';
+    this.crud.route.path = 'establishment';
   }
 
   ngOnInit(): void {
-    this.find();
+    this.read();
   }
 
-  find(): void {
-    this.loader = true;
-    this.api.find(this.route).pipe(first())
-      .subscribe(
-        (res: PageResponseInterface) => { this.items = res.data; this.loader = false; },
-        err => { this.alert.error(err); this.loader = false; }
-      );
+  read(): void {
+    this.crud.read().pipe(first()).subscribe(item => this.items = item.data);
+  }
+
+  delete(id: number) {
+    this.crud.delete(id).subscribe(() => this.items = this.items.filter(item => item.id != id));
   }
 
   search(query?: string): void {
-    this.loader = true;
-    if (query) { this.route.search = query; this.items = []; }
-    this.api.find(this.route).pipe(first())
-      .subscribe(
-        (res: PageResponseInterface) => { this.items = this.items.concat(res.data); this.loader = false; },
-        err => { this.alert.error(err); this.loader = false; }
-      );
+    if (query) { this.crud.route.search = query; this.items = []; }
+    this.crud.read().pipe(first()).subscribe(item => this.items = this.items.concat(item.data));
   }
 
-  delete(id: number): void {
-    this.dialog.open(AlertConfirmComponent, { data: { message: this.trans.get('confirm.delete') } }).afterClosed()
-      .subscribe(
-        res => {
-          if (res) {
-            this.loader = true;
-            this.api.delete(this.route, id).pipe(first())
-              .subscribe(
-                () => { this.items = this.items.filter(item => item.id !== id); this.loader = false; },
-                err => { this.alert.error(err); this.loader = false; }
-              );
-          }
-        }
-      );
-  }
-
-  trackFn = (i: number, item: any) => item.id;
-
-  handlePageEvent(event: PageEvent): void {
-    this.route.page.length = event.length;
-    this.route.page.size = event.pageSize;
-    this.route.page.index = event.pageIndex;
-    this.find();
-  }
 }

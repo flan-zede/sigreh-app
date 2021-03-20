@@ -1,25 +1,37 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { MaterialModule } from 'src/app/material.module';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { AlertConfirmComponent } from './component/alert-confirm.component';
-import { SearchBarComponent } from './component/search-bar.component';
+import {
+  AlertConfirmComponent,
+  FormOptionComponent,
+  ModalSelectComponent,
+  PaginatorComponent,
+  SearchBarComponent,
+  ViewOptionComponent
+} from './component';
 
-import { SearchFilterPipe } from './filter/search-filter.pipe';
-import { NoSpaceDirective } from './directive/no-space.directive';
-import { NumericDirective } from './directive/numeric.directive';
-import { ConfirmEqualDirective } from './directive/confirm-equal.directive';
+import {
+  ConfirmEqualDirective,
+  NoSpaceDirective,
+  NumericDirective
+} from './directive';
+
+import { SearchFilterPipe } from './pipe';
 
 const elements = [
   AlertConfirmComponent,
+  FormOptionComponent,
+  ModalSelectComponent,
+  PaginatorComponent,
   SearchBarComponent,
-  SearchFilterPipe,
+  ViewOptionComponent,
+  ConfirmEqualDirective,
   NoSpaceDirective,
-  NumericDirective,
-  ConfirmEqualDirective
+  NumericDirective
 ];
 
 @NgModule({
@@ -28,8 +40,9 @@ const elements = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    MaterialModule,
     TranslateModule,
-    MaterialModule
+    SearchFilterPipe
   ],
   exports: elements
 })

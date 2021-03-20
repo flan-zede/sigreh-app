@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService } from 'src/app/service/auth.service';
-
-import { User } from 'src/app/model/user.model';
-
-import { MENU_ITEM } from 'src/app/shared/constant/app.constant';
+import { AuthService } from 'src/app/service';
+import { User } from 'src/app/model';
+import { MENU_ITEM } from 'src/app/shared/constant';
 
 @Component({
   selector: 'app-side-navigation',

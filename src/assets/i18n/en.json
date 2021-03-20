@@ -43,9 +43,6 @@
     "location": "Location",
     "no_data": "No data",
     "search": "Search",
-    "confirm": {
-        "delete": "Would-you want to delete this element ?"
-    },
     "man": "Man",
     "woman": "Woman",
     "back": "Back",
@@ -63,5 +60,8 @@
     "department_capital": "Department capital",
     "subprefecture_capital": "Subprefecture capital",
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "alert-message": {
+        "delete": "Would-you want to delete this element ?"
+    }
 }

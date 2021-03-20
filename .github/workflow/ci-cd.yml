@@ -1,0 +1,43 @@
+on: 
+  push:  
+    branches:  
+      - master
+
+jobs:  
+  build:  
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Checkout source code  
+        uses: actions/checkout@v2
+      - name: Use Node.js  
+        uses: actions/setup-node@v1  
+        with:  
+          node-version: '12.x'
+      - name: Install dependencies  
+        run: npm install
+      - name: Lint  
+        run: npm run lint
+      - name: Unit tests  
+        run: npm run test:ci  
+      - name: E2E  
+        run: npm run e2e:ci
+      - name: Build app  
+        run: npm run build:prod
+      - name: Inject slug/short variables  
+        uses: rlespinasse/github-slug-action@v2.x
+      - name: Upload artifact  
+        uses: actions/upload-artifact@v2  
+        with:  
+          name: ng9-github-actions-netlify-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
+          path: ./dist/ng9-github-actions-netlify
+
+  test:  
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Inject slug/short variables  
+        uses: rlespinasse/github-slug-action@v2.x  
+      - name: Download artifact  
+        uses: actions/download-artifact@v2  
+        with:  
+          name: ng9-github-actions-netlify-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
+          path: './build'

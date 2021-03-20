@@ -12,12 +12,12 @@ export interface AuthResponseInterface {
 
 export interface RouteInterface {
     path: string;
-    related?: string;
     sort?: string;
     id?: number;
-    ids?: string;
     search?: string;
     page?: PaginatorInterface;
+    relates?: RelationshipInterface[];
+    patches?: PatchInterface[];
 }
 
 export interface PaginatorInterface {
@@ -35,11 +35,10 @@ export interface PatchInterface {
     value: string;
 }
 
-export interface RelationInterface {
-    path?: string;
-    action?: string;
-    id?: number;
-    relatedId?: number;
+export interface RelationshipInterface {
+    table: string;
+    id: number;
+    add: boolean;
 }
 
 export interface PageResponseInterface {
@@ -61,6 +60,9 @@ export interface MenuItemInterface {
     route: string;
     name: string;
     icon: string;
-    disabled: boolean;
-    roles: string[];
+}
+
+export interface ListItemInterface {
+    id: string;
+    name: string;
 }

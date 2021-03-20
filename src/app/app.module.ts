@@ -9,14 +9,16 @@ import { environment } from '../environments/environment';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { MaterialModule } from './material.module';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { MaterialModule } from './material.module';
-
 import { LayoutModule } from './layout/layout.module';
 import { SharedModule } from './shared/shared.module';
-import { AuthInterceptor } from './shared/interceptor/auth.interceptor';
+import { JwtInterceptor, HttpErrorInterceptor } from './shared/interceptor';
+
+import { AbilityModule } from '@casl/angular';
+import { Ability } from '@casl/ability';
 
 function createTranslateLoader(http: HttpClient) { return new TranslateHttpLoader(http, './assets/i18n/', '.json'); }
 
@@ -32,6 +34,7 @@ function createTranslateLoader(http: HttpClient) { return new TranslateHttpLoade
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MaterialModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -39,12 +42,14 @@ function createTranslateLoader(http: HttpClient) { return new TranslateHttpLoade
         deps: [HttpClient]
       }
     }),
-    MaterialModule,
     LayoutModule,
-    SharedModule
+    SharedModule,
+    AbilityModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: Ability, useValue: new Ability() },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

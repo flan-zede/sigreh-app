@@ -1,36 +1,47 @@
 import { Injectable } from '@angular/core';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
-import { environment } from 'src/environments/environment';
-import { LoginInterface, AuthResponseInterface } from '../shared/interface/app.interface';
+import { Ability, AbilityBuilder } from '@casl/ability';
+
+import { AuthResponseInterface } from 'src/app/shared/interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   setCredential(data: AuthResponseInterface): void {
-      localStorage.setItem('credential', JSON.stringify(data));
+    localStorage.setItem('credential', JSON.stringify(data));
   }
 
   getCredential(): AuthResponseInterface {
-      return JSON.parse(localStorage.getItem('credential'));
-  }
-
-  login(data: LoginInterface): Observable<any> {
-    return this.http.post<AuthResponseInterface>(`${environment.api}/user/login`, data).pipe(tap(
-      res => this.setCredential(res)
-    ));
+    return JSON.parse(localStorage.getItem('credential'));
   }
 
   logout(): void {
-      localStorage.clear();
+    localStorage.clear();
   }
 
-  getAuthUser(): Observable<any> {
-    return this.http.get(`${environment.api}/user/me`);
+  ability(): Ability {
+    const user = this.getCredential().user;
+    const { can, cannot, rules } = new AbilityBuilder(Ability);
+    switch (user.role) {
+      case 'REH': can('manage', 'client'); break;
+      case 'GEH':
+      case 'PP':
+      case 'DDMT':
+      case 'DRMT':
+      case 'DSMT':
+      case 'SMI': can('read', 'client'); break;
+      case 'ADMIN': {
+        can('manage', 'user');
+        can('manage', 'city');
+        can('read', 'client');
+        can('update', 'client');
+        can('manage', 'establishment');
+      } break;
+      default: break;
+    }
+    return new Ability(rules);
   }
 
 }

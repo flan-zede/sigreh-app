@@ -43,15 +43,12 @@
     "location": "Localisation",
     "no_data": "Aucune donnée",
     "search": "Recherche",
-    "confirm": {
-        "delete": "Voulez-vous supprimer cet element ?"
-    },
     "man": "Homme",
     "woman": "Femme",
     "back": "Retour",
     "next": "Suivant",
-    "Cancel": "Annuler",
-    "Confirm": "Valider",
+    "cancel": "Annuler",
+    "confirm": "Valider",
     "person_information": "Information personnelle",
     "account_information": "Information du compte utilisateur",
     "relation_information": "Information concernant les habilitations",
@@ -63,5 +60,8 @@
     "department_capital": "Chef-lieu de departement",
     "subprefecture_capital": "Chef-lieu de sous-prefecture",
     "true": "Oui",
-    "false": "Non"
+    "false": "Non",
+    "alert-message": {
+        "delete": "Voulez-vous supprimer cet element ?"
+    }
 }

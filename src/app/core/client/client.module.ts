@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { MaterialModule } from 'src/app/material.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 import { ClientRoutingModule } from './client-routing.module';
@@ -18,8 +18,8 @@ import { ClientShowComponent } from './client-show.component';
     ClientRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule,
     MaterialModule,
+    TranslateModule,
     SharedModule
   ]
 })

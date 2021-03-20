@@ -19,7 +19,7 @@ export class User {
   username: string;
   email: string;
   password: string;
-  blocked: boolean;
+  active: boolean;
   role: string;
 
   regions: Region[] = [];
@@ -27,4 +27,5 @@ export class User {
   establishments: Establishment[] = [];
 
   createdAt: Date;
+  updatedAt: Date;
 }
