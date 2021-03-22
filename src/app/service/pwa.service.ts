@@ -7,7 +7,9 @@ export class PwaService {
 
   updateSubscription: Subscription;
 
-  constructor(public swUpdate: SwUpdate) { }
+  constructor(
+    public swUpdate: SwUpdate
+  ) { }
 
   swCheckForUpdate(): void {
     this.updateSubscription = this.swUpdate.available

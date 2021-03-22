@@ -2,6 +2,7 @@
     "signin": "Profile",
     "logout": "Lougout",
     "error": {
+        "403": "You don't have permission to access on this resource.",
         "404": "The page you are looking for was not found.",
         "500": "Internal server error."
     },

@@ -2,10 +2,11 @@
     "signin": "Connexion",
     "logout": "Deconnexion",
     "error": {
+        "403": "Vous ne disposez d'aucun droit d'accès à cette resource.",
         "404": "La page que vous recherchez n'a pas été trouvée.",
         "500": "Erreur Interne du Serveur."
     },
-    "back_to_home": "De retour à la maison",
+    "back_to_home": "Retour à la page d'accueil",
     "user": "Utilisateur",
     "firstname": "Prénoms",
     "name": "Nom",

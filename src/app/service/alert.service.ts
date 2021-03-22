@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
-import { AlertConfirmComponent } from 'src/app/shared/component';
+import { AlertConfirmComponent } from 'src/app/module/shared/component';
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
@@ -16,12 +16,12 @@ export class AlertService {
     public trans: TranslateService
   ) { }
 
-  success(text?: string) {
+  success(text?: string): void {
     const message = text ? text : 'Saved';
     this.snackBar.open(message, 'x', { panelClass: 'bg-success', duration: 5000 });
   }
 
-  error(error: HttpErrorResponse) {
+  error(error: HttpErrorResponse): void {
     try {
       const message = (error.error instanceof ErrorEvent) ? error.error.message : `${error.status}: ${error.message}`;
       this.snackBar.open(message, 'x', { panelClass: 'bg-danger', duration: 5000 });
@@ -29,7 +29,7 @@ export class AlertService {
     catch (e) { }
   }
 
-  info(message: string) {
+  info(message: string): void {
     this.snackBar.open(message, 'x', { panelClass: 'bg-primary', duration: 5000 });
   }
 
