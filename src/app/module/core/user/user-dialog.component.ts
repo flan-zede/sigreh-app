@@ -1,40 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { first } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize, first, tap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService, CrudService } from 'src/app/service';
-import { Region, Department, Establishment, User } from 'src/app/model';
-import { ROLE, IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE, DIALOG_CONFIG } from 'src/app/constant';
-
-import { ModalSelectComponent } from '../../shared/component';
-import { Feature, Permission } from 'src/app/enum';
+import { AlertService, AuthService } from 'src/app/service';
+import { Department, Establishment, Region, User } from 'src/app/model';
+import { ManyToManyInterface, RouteInterface } from 'src/app/interface';
+import { Feature } from 'src/app/enum';
+import { IDNUMBER_NATURE, GENDER, NATIONALITY, PHONE_TYPE, DIALOG_CONFIG, ROLE } from 'src/app/constant';
+import { AlertConfirmComponent, ModalSelectComponent } from '../../shared/component';
 
 @Component({
   selector: 'app-user-dialog',
   template: `
   <div class='d-flex justify-content-start'>
-    <mat-icon (click)='router.navigate([crud.route.path])'>keyboard_backspace</mat-icon>
+    <mat-icon (click)='router.navigate([route.path])'>keyboard_backspace</mat-icon>
   </div>
 
-  <div *ngIf='crud.load' class='d-flex justify-content-center'><mat-progress-spinner mode='indeterminate' [diameter]='20'></mat-progress-spinner></div>
+  <div *ngIf='load' class='d-flex justify-content-center'><mat-progress-spinner mode='indeterminate' [diameter]='20'></mat-progress-spinner></div>
 
-  <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
+  <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4 mb-4'>
     <div class='d-flex flex-column'>
-      <button *ngIf='auth.permission.create && !crud.load && !crud.route.id && crud.form.valid' (click)='create()' mat-mini-fab color='primary' class='mb-1'><mat-icon>save</mat-icon></button>
-      <button *ngIf='auth.permission.update && !crud.load && crud.route.id && crud.form.valid' (click)='crud.update().subscribe()' mat-mini-fab color='primary' class='mb-1'><mat-icon>edit</mat-icon></button>
-      <button *ngIf='auth.permission.delete && !crud.load && crud.route.id' (click)='crud.delete().subscribe()' mat-mini-fab color='warn' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
+      <button *ngIf='auth.permission.create && !route.id' [disabled]='load' (click)='create()' mat-fab color='primary'><mat-icon>save</mat-icon></button>
+      <button *ngIf='auth.permission.update && route.id' [disabled]='load || !form.valid' (click)='update()' mat-fab color='primary' class='mt-2 mb-2'><mat-icon>edit</mat-icon></button>
+      <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-fab color='warn'><mat-icon>delete_outline</mat-icon></button>
     </div>
   </div>
 
   <br>
 
-  <form [formGroup]='crud.form'>
+  <form [formGroup]='form'>
     <div class='mb-2'><mat-slide-toggle formControlName='active'></mat-slide-toggle> &nbsp; {{ 'active'|translate }}</div>
 
-    <h3 class='border-bottom'>{{ 'person_information'|translate }}</h3>
+    <h3 class='border-bottom'>{{ 'personInformation'|translate }}</h3>
     <div class='row'>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
@@ -110,13 +113,13 @@ import { Feature, Permission } from 'src/app/enum';
 
     <br>
 
-    <h3 class='border-bottom'>{{ 'account_information'|translate }}</h3>
+    <h3 class='border-bottom'>{{ 'accountInformation'|translate }}</h3>
     <div class='row'>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
           <mat-label>{{ 'username'|translate }}</mat-label>
           <input matInput formControlName='username'>
-          <mat-error *ngIf="crud.form.controls['username'].hasError('minLength')">{{ 'min_length'|translate }} 5</mat-error>
+          <mat-error *ngIf="form.controls['username'].hasError('minLength')">{{ 'min_length'|translate }} 5</mat-error>
         </mat-form-field>
       </div>
       <div class='col-md-3 col-sm-6'>
@@ -130,15 +133,15 @@ import { Feature, Permission } from 'src/app/enum';
           <mat-label>{{ 'password'|translate }}</mat-label>
           <input matInput [type]="hide ? 'password' : 'text'" formControlName='password' #password>
           <mat-icon matSuffix (click)='hide = !hide'>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
-          <mat-error *ngIf="crud.form.controls['password'].hasError('minLength')">{{ 'min_length'|translate }} 5</mat-error>
+          <mat-error *ngIf="form.controls['password'].hasError('minLength')">{{ 'min_length'|translate }} 5</mat-error>
         </mat-form-field>
       </div>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline'>
-          <mat-label>{{ 'confirm_password'|translate }}</mat-label>
+          <mat-label>{{ 'confirmPassword'|translate }}</mat-label>
           <input matInput [type]="hide ? 'password' : 'text'" formControlName='confirmPassword' appConfirmEqual='password'>
           <mat-icon matSuffix (click)='hide = !hide'>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
-          <mat-error *ngIf='crud.form.controls["confirmPassword"].errors?.notEqual'>{{ 'password_confirm_match'|translate }}</mat-error>
+          <mat-error *ngIf='form.controls["confirmPassword"].errors?.notEqual'>{{ 'passwordConfirmMatch'|translate }}</mat-error>
         </mat-form-field>
       </div>
     </div>
@@ -152,28 +155,27 @@ import { Feature, Permission } from 'src/app/enum';
           </mat-select>
         </mat-form-field>
       </div>
-      <div class='col-md-6'>
-        <div *ngIf='["DRMT","DDMT","PP","REH","GEH"].includes(crud.form.controls["role"].value)'>
-          <button (click)='modalRelate()' mat-stroked-button><mat-icon>edit</mat-icon></button>
-        </div>
-      </div>
+      <div class='col-md-6'></div>
     </div>
 
     <div class='row'>
       <div class='col-md-12'>
-        <div *ngIf='["DRMT"].includes(crud.form.controls["role"].value)'>
+        <div *ngIf='["DRMT"].includes(form.controls["role"].value)'>
+          <h3 class='border-bottom'><button (click)='region()' mat-stroked-button><mat-icon>add</mat-icon></button> {{ 'region'|translate }}</h3>
           <mat-chip-list>
-            <mat-chip *ngFor='let p of crud.form.controls["regions"].value'>{{ p.name }}</mat-chip>
+            <mat-chip *ngFor='let p of form.controls["regions"].value'>{{ p.name }}</mat-chip>
           </mat-chip-list>
         </div>
-        <div *ngIf='["DDMT","PP"].includes(crud.form.controls["role"].value)'>
+        <div *ngIf='["DDMT","PP"].includes(form.controls["role"].value)'>
+          <h3 class='border-bottom'><button (click)='department()' mat-stroked-button><mat-icon>add</mat-icon></button> {{ 'department'|translate }}</h3>
           <mat-chip-list>
-            <mat-chip *ngFor='let p of crud.form.controls["departments"].value'>{{ p.name }}</mat-chip>
+            <mat-chip *ngFor='let p of form.controls["departments"].value'>{{ p.name }}</mat-chip>
           </mat-chip-list>
         </div>
-        <div *ngIf='["REH","GEH"].includes(crud.form.controls["role"].value)'>
+        <div *ngIf='["REH","GEH"].includes(form.controls["role"].value)'>
+          <h3 class='border-bottom'><button (click)='establishment()' mat-stroked-button><mat-icon>add</mat-icon></button> {{ 'establishment'|translate }}</h3>
           <mat-chip-list>
-            <mat-chip *ngFor='let p of crud.form.controls["establishments"].value'>{{ p.name }}</mat-chip>
+            <mat-chip *ngFor='let p of form.controls["establishments"].value'>{{ p.name }}</mat-chip>
           </mat-chip-list>
         </div>
       </div>
@@ -185,29 +187,40 @@ import { Feature, Permission } from 'src/app/enum';
 })
 export class UserDialogComponent implements OnInit {
 
+  load = false;
+  route: RouteInterface;
+  form: FormGroup;
+  defaultForm: FormGroup;
+  readonly dialogConfig = DIALOG_CONFIG;
+
   hide = true;
   readonly role = ROLE;
   readonly idnumberNature = IDNUMBER_NATURE;
   readonly gender = GENDER;
   readonly nationality = NATIONALITY;
   readonly phoneType = PHONE_TYPE;
-  readonly dialogConfig = DIALOG_CONFIG;
 
   regions: Region[] = [];
+  regionsTemp: Region[] = [];
+
   departments: Department[] = [];
+  departmentsTemp: Department[] = [];
+
   establishments: Establishment[] = [];
+  establishmentsTemp: Establishment[] = [];
 
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     public router: Router,
     protected dialog: MatDialog,
-    public auth: AuthService,
-    public crud: CrudService
+    private http: HttpClient,
+    private trans: TranslateService,
+    private alert: AlertService,
+    public auth: AuthService
   ) {
-    this.crud.route.path = Feature.User;
-    this.crud.route.id = this.activatedRoute.snapshot.params?.id;
-    this.crud.defaultForm = this.fb.group({
+    this.route = { path: Feature.User, id: this.activatedRoute.snapshot.params?.id };
+    this.defaultForm = this.fb.group({
       firstname: ['', Validators.compose([Validators.required])],
       name: ['', Validators.compose([Validators.required])],
       birthdate: ['', Validators.compose([Validators.required])],
@@ -231,58 +244,130 @@ export class UserDialogComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      regions: this.crud.readAll('region'),
-      departments: this.crud.readAll('department'),
-      establishments: this.crud.readAll('establishment')
-    }).pipe(first()).subscribe((res: any) => {
-      this.regions = res.regions;
-      this.departments = res.departments;
-      this.establishments = res.establishments;
-    });
-    this.crud.createForm();
-    if (this.crud.route.id) { this.crud.readOne().pipe(first()).subscribe(); }
+      regions: this.http.get(`${environment.api}/region?sort=asc`),
+      departments: this.http.get(`${environment.api}/department?sort=asc`),
+      establishments: this.http.get(`${environment.api}/establishment?sort=asc`)
+    }).pipe(first())
+      .subscribe((res: any) => {
+        this.regions = res.regions;
+        this.departments = res.departments;
+        this.establishments = res.establishments;
+      });
+    if (this.route.id) {
+      this.http.get(`${environment.api}/${this.route.path}/${this.route.id}`)
+        .pipe(
+          first(),
+          tap(() => this.load = true),
+          finalize(() => this.load = false),
+          catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+        )
+        .subscribe((item: User) => {
+          this.regionsTemp = item.regions;
+          this.departmentsTemp = item.departments;
+          this.establishmentsTemp = item.establishments;
+          this.form.patchValue(item);
+        });
+    }
+    this.form = this.defaultForm;
     this.auth.permissions(Feature.User);
   }
 
-  create(): void{
-    this.crud.create().subscribe((item: User) => this.router.navigate([this.crud.route.path + '/update/' + this.crud.route.id]));
+  create(): void {
+    this.http.post(`${environment.api}/${this.route.path}`, this.form.value)
+      .pipe(
+        first(),
+        tap(() => this.load = true),
+        finalize(() => this.load = false),
+        catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+      )
+      .subscribe((item: User) => {
+        this.relate(item);
+        this.alert.success();
+        this.form = this.defaultForm;
+      });
   }
 
-  modalRelate(): void {
-    let select = [];
-    switch (this.crud.form.value.role) {
-      case 'DRMT': {
-        select = this.crud.form.value.regions;
-        this.dialog.open(ModalSelectComponent, { ...this.dialogConfig, data: { list: this.regions, select, multiple: true } })
-          .afterClosed()
-          .subscribe((p: any) => {
-            this.crud.pepare('many', 'region', p, select);
-            this.crud.form.patchValue({ regions: p });
-          });
-      }
-                   break;
-      case 'DDMT':
-      case 'PP': {
-        select = this.crud.form.value.departments;
-        this.dialog.open(ModalSelectComponent, { ...this.dialogConfig, data: { list: this.departments, select, multiple: true } })
-          .afterClosed()
-          .subscribe((p: any) => {
-            this.crud.pepare('many', 'department', p, select);
-            this.crud.form.patchValue({ departments: p });
-          });
-      }          break;
-      case 'REH':
-      case 'GEH': {
-        select = this.crud.form.value.establishments;
-        this.dialog.open(ModalSelectComponent, { ...this.dialogConfig, data: { list: this.establishments, select, multiple: false } })
-          .afterClosed()
-          .subscribe((p: any) => {
-            this.crud.pepare('many', 'establishment', p, select);
-            this.crud.form.patchValue({ establishments: p });
-          });
-      }           break;
-      default: break;
-    }
+  update(): void {
+    this.http.put(`${environment.api}/${this.route.path}/${this.route.id}`, this.form.value)
+      .pipe(
+        first(),
+        tap(() => this.load = true),
+        finalize(() => this.load = false),
+        catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+      )
+      .subscribe((item: User) => { this.relate(item); this.alert.success(); });
+  }
+
+  delete(): void {
+    this.trans.stream('alertMessage.delete')
+      .subscribe(text =>
+        this.dialog.open(AlertConfirmComponent, { data: { text } }).afterClosed()
+          .subscribe(res => {
+            if (res) {
+              this.http.delete(`${environment.api}/${this.route.path}/${this.route.id}`)
+                .pipe(
+                  first(),
+                  tap(() => this.load = true),
+                  finalize(() => this.load = false),
+                  catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+                )
+                .subscribe(() => this.router.navigate([this.route.path]));
+            }
+          }
+          )
+      );
+  }
+
+  relate(item: User): void {
+    this.diff('region', this.regionsTemp, this.form.value.regions).forEach((data: ManyToManyInterface) =>
+      this.http.post(`${environment.api}/${this.route.path}/${item.id}/relate`, data)
+        .pipe(first())
+        .subscribe()
+    );
+    this.diff('department', this.departmentsTemp, this.form.value.departments).forEach((data: ManyToManyInterface) =>
+      this.http.post(`${environment.api}/${this.route.path}/${item.id}/relate`, data)
+        .pipe(first())
+        .subscribe()
+    );
+    this.diff('establishment', this.establishmentsTemp, this.form.value.establishments).forEach((data: ManyToManyInterface) =>
+      this.http.post(`${environment.api}/${this.route.path}/${item.id}/relate`, data)
+        .pipe(first())
+        .subscribe()
+    );
+  }
+
+  region(): void {
+    const c = { ...this.dialogConfig, data: { list: this.regions, select: this.form.value.regions, multiple: true } };
+    this.dialog.open(ModalSelectComponent, c).afterClosed()
+      .subscribe((p: any) => this.form.patchValue({ regions: p }));
+  }
+
+  department(): void {
+    const c = { ...this.dialogConfig, data: { list: this.departments, select: this.form.value.departments, multiple: true } };
+    this.dialog.open(ModalSelectComponent, c).afterClosed()
+      .subscribe((p: any) => this.form.patchValue({ departments: p }));
+  }
+
+  establishment(): void {
+    const c = { ...this.dialogConfig, data: { list: this.establishments, select: this.form.value.establishments, multiple: false } };
+    this.dialog.open(ModalSelectComponent, c).afterClosed()
+      .subscribe((p: any) => this.form.patchValue({ establishments: p }));
+  }
+
+  diff(table: string, old: any, next: any): ManyToManyInterface[] {
+    const diff: ManyToManyInterface[] = [];
+    let exist = false;
+    next.forEach((n: any) => {
+      exist = false;
+      old.forEach((o: any) => { if (o.id === n.id) { exist = true; } });
+      if (exist === false) { diff.push({ table, id: n.id, add: true }); }
+    });
+    old.forEach((o: any) => {
+      exist = false;
+      next.forEach((n: any) => { if (o.id === n.id) { exist = true; } });
+      if (exist === false) { diff.push({ table, id: o.id, add: false }); }
+    });
+    return diff;
   }
 
 }

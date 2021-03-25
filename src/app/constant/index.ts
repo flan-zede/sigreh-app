@@ -7,5 +7,4 @@ export * from './menu-items.constant';
 export * from './nationality.constant';
 export * from './occupation-type.constant';
 export * from './phone-type.constant';
-export * from './route.constant';
 export * from './role.constant';

@@ -12,7 +12,7 @@ import { Permission } from 'src/app/enum';
     <h4 mat-list-item class='text-center'>MENU</h4>
     <mat-divider></mat-divider>
     <div *ngFor='let el of items'>
-      <a mat-list-item>
+      <a mat-list-item (click)='router.navigate([el.path])'>
         <mat-icon *ngIf='el.icon'>{{ el.icon }}</mat-icon>&nbsp;{{ el.name | translate }}
         <mat-divider></mat-divider>
       </a>

@@ -33,11 +33,6 @@ import { AuthService } from 'src/app/service';
         </div>
       </mat-toolbar-row>
     </mat-toolbar>
-    <mat-toolbar>
-        <mat-toolbar-row>
-          <app-top-navigation class='w-100 overflow-auto'></app-top-navigation>
-        </mat-toolbar-row>
-    </mat-toolbar>
   `
 })
 export class HeaderComponent {

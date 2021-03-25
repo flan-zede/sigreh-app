@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   constructor(
     private pwa: PwaService,
     public trans: TranslateService
-  ) { 
+  ) {
     trans.addLangs(['en', 'fr']);
     trans.setDefaultLang('en');
     trans.use(trans.getBrowserLang().match(/en|fr/) ? trans.getBrowserLang() : 'fr');

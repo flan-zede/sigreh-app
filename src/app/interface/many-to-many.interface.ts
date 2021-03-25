@@ -3,8 +3,3 @@ export interface ManyToManyInterface {
     id: number;
     add: boolean;
 }
-
-export interface OneToManyInterface {
-    table: string;
-    value: any;
-}

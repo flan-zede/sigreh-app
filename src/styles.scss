@@ -71,6 +71,10 @@ $app-theme:   mat-light-theme($app-primary, $app-accent, $app-warn);
   color: #6c757d !important;
 }
 
+.mat-chip {
+  font-weight: normal !important;
+}
+
 //bootstrap----------------------------------------------------------------------------------
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";

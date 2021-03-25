@@ -1,36 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { first } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
+import { catchError, finalize, first, tap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService, CrudService } from 'src/app/service';
+import { AlertService, AuthService } from 'src/app/service';
 import { Client, Partner, User } from 'src/app/model';
-import { IDNUMBER_NATURE, BEDROOM_TYPE, OCCUPATION_TYPE, GENDER, NATIONALITY, PHONE_TYPE, DIALOG_CONFIG } from 'src/app/constant';
-import { PartnerComponent } from '../../shared/component';
 import { Feature } from 'src/app/enum';
+import { IDNUMBER_NATURE, BEDROOM_TYPE, OCCUPATION_TYPE, GENDER, NATIONALITY, PHONE_TYPE, DIALOG_CONFIG } from 'src/app/constant';
+import { AlertConfirmComponent, PartnerComponent } from '../../shared/component';
+import { RouteInterface } from 'src/app/interface';
 
 @Component({
   selector: 'app-client-dialog',
   template: `
   <div class='d-flex justify-content-start'>
-    <mat-icon (click)='router.navigate([crud.route.path])'>keyboard_backspace</mat-icon>
+    <mat-icon (click)='router.navigate([route.path])'>keyboard_backspace</mat-icon>
   </div>
 
-  <div *ngIf='crud.load' class='d-flex justify-content-center'><mat-progress-spinner mode='indeterminate' [diameter]='20'></mat-progress-spinner></div>
+  <div *ngIf='load' class='d-flex justify-content-center'><mat-progress-spinner mode='indeterminate' [diameter]='20'></mat-progress-spinner></div>
 
-  <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4'>
+  <div class='d-flex justify-content-end position-fixed fixed-bottom mr-4 mb-4'>
     <div class='d-flex flex-column'>
-      <button *ngIf='auth.permission.create && !crud.load && !crud.route.id && crud.form.valid' (click)='create()' mat-mini-fab color='primary' class='mb-1'><mat-icon>save</mat-icon></button>
-      <button *ngIf='auth.permission.update && !crud.load && crud.route.id && crud.form.valid' (click)='crud.update().subscribe()' mat-mini-fab color='primary' class='mb-1'><mat-icon>edit</mat-icon></button>
-      <button *ngIf='auth.permission.delete && !crud.load && crud.route.id' (click)='crud.delete().subscribe()' mat-mini-fab color='warn' class='mb-1'><mat-icon>delete_outline</mat-icon></button>
+      <button *ngIf='auth.permission.create && !route.id' [disabled]='load' (click)='create()' mat-fab color='primary'><mat-icon>save</mat-icon></button>
+      <button *ngIf='auth.permission.update && route.id' [disabled]='load || !form.valid' (click)='update()' mat-fab color='primary' class='mt-2 mb-2'><mat-icon>edit</mat-icon></button>
+      <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-fab color='warn'><mat-icon>delete_outline</mat-icon></button>
     </div>
   </div>
 
   <br>
 
-  <form [formGroup]='crud.form'>
-    <h3 class='border-bottom'>{{ 'person_information'|translate }}</h3>
+  <form [formGroup]='form'>
+    <h3 class='border-bottom'>{{ 'personInformation'|translate }}</h3>
     <div class='row'>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
@@ -97,12 +102,12 @@ import { Feature } from 'src/app/enum';
         <mat-form-field appearance='outline' >
           <mat-label>{{ 'phone'|translate }}</mat-label>
           <input matInput type='tel' formControlName='phone'>
-          <mat-error *ngIf="crud.form.controls['phone'].hasError('minLength')">{{ 'min_length'|translate }} 10</mat-error>
+          <mat-error *ngIf="form.controls['phone'].hasError('minLength')">{{ 'min_length'|translate }} 10</mat-error>
         </mat-form-field>
       </div>
     </div>
 
-    <h3 class='border-bottom'>{{ 'client_information'|translate }}</h3>
+    <h3 class='border-bottom'>{{ 'clientInformation'|translate }}</h3>
     <div class='row'>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
@@ -112,15 +117,15 @@ import { Feature } from 'src/app/enum';
           </mat-select>
         </mat-form-field>
       </div>
-      <div class='col-md-3 col-sm-6' *ngIf='crud.form.controls["occupationType"].value =="NU"'>
+      <div class='col-md-3 col-sm-6' *ngIf='form.controls["occupationType"].value =="NU"'>
         <mat-form-field appearance='outline'>
-          <mat-label>{{ 'number_of_nights'|translate }}</mat-label>
+          <mat-label>{{ 'numberOfNights'|translate }}</mat-label>
           <input matInput type='number' min='1' formControlName='numberOfNights'>
         </mat-form-field>
       </div>
-      <div class='col-md-3 col-sm-6' *ngIf='crud.form.controls["occupationType"].value =="PA"'>
+      <div class='col-md-3 col-sm-6' *ngIf='form.controls["occupationType"].value =="PA"'>
         <mat-form-field appearance='outline' >
-          <mat-label>{{ 'number_of_hours'|translate }}</mat-label>
+          <mat-label>{{ 'numberOfHours'|translate }}</mat-label>
           <input matInput type='number' min='1' formControlName='numberOfHours'>
         </mat-form-field>
       </div>
@@ -134,7 +139,7 @@ import { Feature } from 'src/app/enum';
       </div>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
-          <mat-label>{{ 'bedroom_number'|translate }}</mat-label>
+          <mat-label>{{ 'bedroomNumber'|translate }}</mat-label>
           <input matInput formControlName='bedroomNumber'>
         </mat-form-field>
       </div>
@@ -143,7 +148,7 @@ import { Feature } from 'src/app/enum';
     <div class='row'>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
-          <mat-label>{{ 'enter_date'|translate }}</mat-label>
+          <mat-label>{{ 'enterDate'|translate }}</mat-label>
           <input matInput [matDatepicker]='enterdate' [min]='minEnterdate' readonly formControlName='enterDate'>
           <mat-datepicker-toggle matSuffix [for]='enterdate'></mat-datepicker-toggle>
           <mat-datepicker touchUi #enterdate startView='year'></mat-datepicker>
@@ -151,67 +156,69 @@ import { Feature } from 'src/app/enum';
       </div>
       <div class='col-md-3 col-sm-6'>
         <mat-form-field appearance='outline' >
-          <mat-label>{{ 'enter_time'|translate }}</mat-label>
+          <mat-label>{{ 'enterTime'|translate }}</mat-label>
           <input matInput type='time' formControlName='enterTime'>
         </mat-form-field>
       </div>
     </div>
 
-    <h3 class='border-bottom'>{{ 'partner'|translate }}</h3>
-    <button (click)='modalPartner()' mat-stroked-button><mat-icon>add</mat-icon></button>
-
-    <div>
-      <table mat-table [dataSource]='crud.form.controls["partners"].value' class='mat-elevation-z8 w-100 mt-2 mb-3'>
-        <ng-container matColumnDef='gender'>
-          <th mat-header-cell *matHeaderCellDef>{{ 'gender'|translate }}</th>
-          <td mat-cell *matCellDef='let p'> <span *ngFor='let e of gender'><span *ngIf='e.id == p.gender'>{{ p.name }}</span></span> </td>
-        </ng-container>
-        <ng-container matColumnDef='name'>
-          <th mat-header-cell *matHeaderCellDef>{{ 'name'|translate }}</th>
-          <td mat-cell *matCellDef='let p'> {{ p.name }} </td>
-        </ng-container>
-        <ng-container matColumnDef='age'>
-          <th mat-header-cell *matHeaderCellDef>{{ 'age'|translate }}</th>
-          <td mat-cell *matCellDef='let p'> {{ p.age }} </td>
-        </ng-container>
-        <ng-container matColumnDef='action'>
-          <th mat-header-cell *matHeaderCellDef> </th>
-          <td mat-cell *matCellDef='let p'> <button mat-stroked-button (click)='deletePartner(p.id)'><mat-icon>close</mat-icon></button> </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef='partnerColumns'></tr>
-        <tr mat-row *matRowDef='let row; columns: partnerColumns;'></tr>
-      </table>
-    </div>
+    <h3 class='border-bottom'><button (click)='partner()' mat-stroked-button><mat-icon>add</mat-icon></button> {{ 'partner'|translate }}</h3>
+    <table class='w-100 mt-2 mb-3'>
+      <thead>
+        <tr>
+          <th></th>
+          <th>{{ 'gender'|translate }}</th>
+          <th>{{ 'name'|translate }}</th>
+          <th>{{ 'age'|translate }}</th>
+          <th> </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor='let p of form.controls["partners"].value; let index = index;'>
+          <td>{{ index }}</td>
+          <td><span *ngFor='let e of gender'><span *ngIf='e.id == p.gender'>{{ p.name }}</span></span></td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.age }}</td>
+          <td><button mat-stroked-button (click)='partner(index)'><mat-icon>close</mat-icon></button></td>
+        </tr>
+      </tbody>
+    </table>
 
   </form>
   `
 })
 export class ClientDialogComponent implements OnInit {
 
+  load = false;
+  route: RouteInterface;
+  form: FormGroup;
+  defaultForm: FormGroup;
+  readonly dialogConfig = DIALOG_CONFIG;
+
   user: User;
+  minEnterdate: Date = new Date();
+  maxBirthdate: Date = new Date(new Date().getFullYear() - 20, 0, 1);
+
   readonly idnumberNature = IDNUMBER_NATURE;
   readonly bedroomType = BEDROOM_TYPE;
   readonly occupationType = OCCUPATION_TYPE;
   readonly gender = GENDER;
   readonly nationality = NATIONALITY;
   readonly phoneType = PHONE_TYPE;
-  readonly dialogConfig = DIALOG_CONFIG;
-  maxBirthdate: Date = new Date(new Date().getFullYear() - 20, 0, 1);
-  minEnterdate: Date = new Date();
-  partnerColumns: string[] = ['gender', 'name', 'age', 'action'];
 
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     public router: Router,
     protected dialog: MatDialog,
-    public auth: AuthService,
-    public crud: CrudService
+    private http: HttpClient,
+    private trans: TranslateService,
+    private alert: AlertService,
+    public auth: AuthService
   ) {
-    this.crud.route.path = Feature.Client;
-    this.crud.route.id = this.activatedRoute.snapshot.params?.id;
+    this.route = { path: Feature.Client, id: this.activatedRoute.snapshot.params?.id };
     this.user = this.auth.getCredential()?.user;
-    this.crud.defaultForm = this.fb.group({
+    this.defaultForm = this.fb.group({
       firstname: ['', Validators.compose([Validators.required])],
       name: ['', Validators.compose([Validators.required])],
       birthdate: ['', Validators.compose([Validators.required])],
@@ -235,29 +242,95 @@ export class ClientDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.crud.createForm();
-    if (this.crud.route.id) { this.crud.readOne().pipe(first()).subscribe(); }
+    if (this.route.id) {
+      this.http.get(`${environment.api}/${this.route.path}/${this.route.id}`)
+        .pipe(
+          first(),
+          tap(() => this.load = true),
+          finalize(() => this.load = false),
+          catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+        )
+        .subscribe((item: Client) => this.form.patchValue(item));
+    }
+    this.form = this.defaultForm;
     this.auth.permissions(Feature.Client);
   }
 
-  create(): void{
-    this.crud.create().subscribe((item: Client) => this.router.navigate([this.crud.route.path + '/update/' + this.crud.route.id]));
+  create(): void {
+    this.http.post(`${environment.api}/${this.route.path}`, this.form.value)
+      .pipe(
+        first(),
+        tap(() => this.load = true),
+        finalize(() => this.load = false),
+        catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+      )
+      .subscribe((item: Client) => {
+        this.relate(item);
+        this.alert.success();
+        this.form = this.defaultForm;
+      });
   }
 
-  modalPartner(): void {
-    this.dialog.open(PartnerComponent, { ...this.dialogConfig, data: {} }).afterClosed().subscribe((p: any) => {
-      if (p) {
-        this.crud.pepare('one', 'partner', p);
-        this.crud.form.patchValue({ partners: this.crud.form.value.partners.concat(p) });
-      }
+  update(): void {
+    this.http.put(`${environment.api}/${this.route.path}/${this.route.id}`, this.form.value)
+      .pipe(
+        first(),
+        tap(() => this.load = true),
+        finalize(() => this.load = false),
+        catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+      )
+      .subscribe((item: Client) => { this.relate(item); this.alert.success(); });
+  }
+
+  delete(): void {
+    this.trans.stream('alertMessage.delete')
+      .subscribe(text =>
+        this.dialog.open(AlertConfirmComponent, { data: { text } }).afterClosed()
+          .subscribe(res => {
+            if (res) {
+              this.http.delete(`${environment.api}/${this.route.path}/${this.route.id}`)
+                .pipe(
+                  first(),
+                  tap(() => this.load = true),
+                  finalize(() => this.load = false),
+                  catchError((err: HttpErrorResponse) => { this.alert.error(err); return of(); })
+                )
+                .subscribe(() => this.router.navigate([this.route.path]));
+            }
+          }
+          )
+      );
+  }
+
+  relate(item: Client): void {
+    this.form.value.partners.forEach((p: Partner) => {
+      if (!p.id) { this.http.post(`${environment.api}/partner`, { ...p, clientId: item.id }).subscribe(); }
     });
   }
 
-  deletePartner(id: number): void {
-    const partners = this.crud.form.value.partners.filter((p: Partner) => p.id !== id);
-    this.crud.form.patchValue({ partners });
-    const partner = this.crud.form.value.partners.find((p: Partner) => p.id === id);
-    this.crud.pepare('one', 'partner', partner);
+  partner(index?: number): void {
+    if (index) {
+      const partner = this.form.value.partners[index];
+      if (partner.id) {
+        this.trans.stream('alertMessage.delete')
+          .subscribe(text =>
+            this.dialog.open(AlertConfirmComponent, { data: { text } }).afterClosed()
+              .subscribe(res => {
+                if (res) {
+                  this.http.delete(`${environment.api}/partner/${partner.id}`)
+                    .pipe(first())
+                    .subscribe(() => this.form.value.partners.splice(index, 1));
+                }
+              }
+              )
+          );
+      }
+      else { this.form.value.partners.splice(index, 1); }
+    }
+    else {
+      this.dialog.open(PartnerComponent, { ...this.dialogConfig, data: {} }).afterClosed()
+        .subscribe((p: any) => { if (p) { this.form.value.partners.concat(p); } });
+    }
   }
 
 }

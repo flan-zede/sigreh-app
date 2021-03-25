@@ -5,6 +5,6 @@ export class Partner {
   gender: string;
   name: string;
   age: string;
-  ClientId: number;
-  Client: Client;
+  clientId: number;
+  client: Client;
 }

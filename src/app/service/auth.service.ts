@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
 import { PermissionInterface, AuthResponseInterface } from 'src/app/interface';
-import { User } from '../model';
 import { Role, Feature, Permission } from '../enum';
 
 @Injectable({ providedIn: 'root' })
@@ -94,7 +93,7 @@ export class AuthService {
     return false;
   }
 
-  permissions(feature: Feature): void {
+  permissions(feature: string): void {
     this.permission.create = this.checkPermission(feature, Permission.Create);
     this.permission.read = this.checkPermission(feature, Permission.Read);
     this.permission.update = this.checkPermission(feature, Permission.Update);

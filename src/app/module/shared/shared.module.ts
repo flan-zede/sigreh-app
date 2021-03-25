@@ -14,7 +14,6 @@ import {
 } from './component';
 
 import {
-  CheckPermissionDirective,
   ConfirmEqualDirective,
   NoSpaceDirective,
   NumericDirective
@@ -31,7 +30,6 @@ const elements = [
   PaginatorComponent,
   PartnerComponent,
   SearchBarComponent,
-  CheckPermissionDirective,
   ConfirmEqualDirective,
   NoSpaceDirective,
   NumericDirective,

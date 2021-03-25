@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'client', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', loadChildren: () => import('./module/core/dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'city', loadChildren: () => import('./module/core/city/city.module').then(m => m.CityModule) },
   { path: 'client', loadChildren: () => import('./module/core/client/client.module').then(m => m.ClientModule) },
   { path: 'establishment', loadChildren: () =>

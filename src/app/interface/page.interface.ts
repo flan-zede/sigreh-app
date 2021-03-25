@@ -1,4 +1,4 @@
-export interface PaginatorInterface {
+export interface PageInterface {
     index: number;
     size: number;
     length: number;
