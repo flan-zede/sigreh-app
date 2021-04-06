@@ -1,0 +1,144 @@
+<button mat-icon-button (click)='router.navigate([route.path])'>
+    <mat-icon>keyboard_backspace</mat-icon>
+</button>
+
+<form [formGroup]='form'>
+    <div class='row mb-2'>
+        <div class='col-lg-12'>
+            <h3 class='border-bottom'>Information personnelle</h3>
+        </div>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Prénoms</mat-label>
+            <input matInput autocomplete='off' formControlName='firstname'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Nom</mat-label>
+            <input matInput autocomplete='off' formControlName='name'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Date de naissance</mat-label>
+            <input matInput [matDatepicker]='birthdate' [max]='maxBirthdate' readonly formControlName='birthdate'>
+            <mat-datepicker-toggle matSuffix [for]='birthdate'></mat-datepicker-toggle>
+            <mat-datepicker touchUi #birthdate></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Sexe</mat-label>
+            <mat-select formControlName='gender'>
+                <mat-option *ngFor='let p of gender' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type de pièce d'identité</mat-label>
+            <mat-select formControlName='idnumberNature'>
+                <mat-option *ngFor='let p of idnumberNature' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Numéro de pièce</mat-label>
+            <input matInput autocomplete='off' formControlName='idnumber'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type de contact</mat-label>
+            <mat-select formControlName='phoneType'>
+                <mat-option *ngFor='let p of phoneType' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Contact</mat-label>
+            <input matInput autocomplete='off' formControlName='phone'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Nationalité</mat-label>
+            <mat-select formControlName='nationality'>
+                <mat-option [value]='p.id' *ngFor='let p of nationality'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class='col-lg-12'>
+            <h3 class='border-bottom'>Information du client</h3>
+        </div>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type d'occupation</mat-label>
+            <mat-select formControlName='occupationType'>
+                <mat-option *ngFor='let p of occupationType' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'
+            *ngIf='form.controls["occupationType"].value =="NU"'>
+            <mat-label>Nombre de nuitées</mat-label>
+            <input matInput type='number' min='1' autocomplete='off' formControlName='numberOfNights'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'
+            *ngIf='form.controls["occupationType"].value =="PA"'>
+            <mat-label>Nombre d'heures</mat-label>
+            <input matInput type='number' min='1' autocomplete='off' formControlName='numberOfHours'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type de chambre</mat-label>
+            <mat-select formControlName='bedroomType'>
+                <mat-option *ngFor='let p of bedroomType' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Numéro de chambre</mat-label>
+            <input matInput autocomplete='off' formControlName='bedroomNumber'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Date d'entrée</mat-label>
+            <input matInput [matDatepicker]='enterdate' [min]='minEnterdate' readonly formControlName='enterDate'>
+            <mat-datepicker-toggle matSuffix [for]='enterdate'></mat-datepicker-toggle>
+            <mat-datepicker touchUi #enterdate startView='year'></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Heure d'entrée</mat-label>
+            <input matInput type='time' autocomplete='off' formControlName='enterTime'>
+        </mat-form-field>
+        <div class='col-lg-12'>
+            <h3 class='border-bottom'>Partenaire.s</h3>
+        </div>
+        <div class='col-lg-12'>
+            <button (click)='partner()' mat-stroked-button>
+                <mat-icon>add</mat-icon>
+            </button>
+            <table class='w-100'>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Sexe</th>
+                        <th>Nom & prénoms</th>
+                        <th>Age</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let p of form.controls["partners"].value; let index = index;'>
+                        <td>{{ index + 1 }}</td>
+                        <td><span *ngFor='let e of gender'><span *ngIf='e.id == p.gender'>{{ p.name }}</span></span>
+                        </td>
+                        <td>{{ p.name }}</td>
+                        <td>{{ p.age }}</td>
+                        <td>
+                            <button mat-stroked-button (click)='partner(index)'>
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<div class='d-flex justify-content-center'>
+    <button *ngIf='auth.permission.create && !route.id' [disabled]='load || !form.valid' (click)='create()'
+        mat-stroked-button color='primary'> Enregistrer
+    </button>
+    <button class='ml-1 mr-1' *ngIf='auth.permission.update && route.id' [disabled]='load || !form.valid'
+        (click)='update()' mat-stroked-button color='primary'> Modifier
+    </button>
+    <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-stroked-button
+        color='warn'> Supprimer
+    </button>
+</div>
+
+<mat-progress-spinner *ngIf='load' class='mx-auto d-block mt-1' mode='indeterminate' [diameter]='20'>
+</mat-progress-spinner>

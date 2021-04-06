@@ -3,23 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-import { TranslateModule } from '@ngx-translate/core';
-
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 
 import { AuthRoutingModule } from './auth-routing.module';
-import { AuthComponent } from './auth.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
-  declarations: [AuthComponent],
+  declarations: [LoginComponent],
   imports: [
     CommonModule,
     HttpClientModule,
     AuthRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    TranslateModule,
     MaterialModule,
     SharedModule
   ]

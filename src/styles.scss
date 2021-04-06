@@ -1,11 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+body { margin: 0; font-family: "Helvetica Neue", sans-serif; }
 
 //material
 @import '@angular/material/theming';
+@import "~material-design-icons/iconfont/material-icons.css";
+
 @include mat-core();
 $app-primary: mat-palette($mat-indigo);
 $app-accent:  mat-palette($mat-green, A200, A100, A400);
@@ -13,67 +14,13 @@ $app-warn:    mat-palette($mat-red);
 $app-theme:   mat-light-theme($app-primary, $app-accent, $app-warn);
 @include angular-material-theme($app-theme);
 
-.mat-drawer-container {
-  margin: 0;
-  height: calc(100% - 104px);
-}
-
-.mat-drawer-content {
-  height: 100%;
-  width: 100%;
-  background: white;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin: auto;
-}
-
-.mat-nav-list {
-  width: 210px;
-  overflow: hidden;
-}
-
-.mat-form-field {
-  width: 100%;
-}
-
-.mat-toolbar, .mat-toolbar-row {
-  min-height: 52px !important;
-  height: 52px !important;
-}
-
-.mat-form-field-flex > .mat-form-field-infix {
-  padding: 0.6em 0px !important;
-}
-
-.mat-form-field-label-wrapper {
-  top: -1.5em;
-}
-
+.mat-chip-list-wrapper { margin: 0 !important; }
+.mat-form-field-flex > .mat-form-field-infix { padding: 0.6em 0px !important; }
+.mat-form-field-label-wrapper { top: -1.5em; }
 .mat-form-field-appearance-outline
 .mat-form-field-can-float
 .mat-form-field-should-float
-.mat-form-field-label {
-  transform: translateY(-1.1em) scale(.75);  width: 133.33333%;
-}
-
-.mat-icon {
-  // font-family: 'Material Icons Two Tone';
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.mat-form-field-prefix,
-.mat-form-field-suffix {
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  color: #6c757d !important;
-}
-
-.mat-chip {
-  font-weight: normal !important;
-}
+.mat-form-field-label { transform: translateY(-1.1em) scale(.75);  width: 133.33333%; }
 
 //bootstrap----------------------------------------------------------------------------------
 @import "bootstrap/scss/functions";
@@ -115,23 +62,9 @@ $container-max-widths: (
   xl: 1600px
 );
 
-@keyframes spinner {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.spinner:before {
-  content: '';
-  box-sizing: border-box;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
-  margin-top: -10px;
-  margin-left: -10px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  border-top-color: #000000;
-  animation: spinner .8s linear infinite;
+// me --------------------------------------------------------------------------
+.title {
+  font-size: 1.15rem;
+  font-family: inherit;
+  font-weight: 400;
 }

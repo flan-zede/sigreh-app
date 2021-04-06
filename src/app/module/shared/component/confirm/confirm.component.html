@@ -1,0 +1,7 @@
+<div class='d-flex justify-content-center'>
+    <p>{{ data.message }}</p>
+</div>
+<div class='d-flex justify-content-end'>
+    <button mat-button id='no' color='warn' [mat-dialog-close]='false'>Annuler</button>
+    <button mat-button id='yes' color='primary' [mat-dialog-close]='true'>Confirmer</button>
+</div>

@@ -1,0 +1,33 @@
+<button mat-icon-button (click)='router.navigate([route.path])'>
+    <mat-icon>keyboard_backspace</mat-icon>
+</button>
+
+<form [formGroup]='form'>
+    <div class='row mt-2 mb-2'>
+        <mat-form-field class='col-sm-6' appearance='outline'>
+            <mat-label>Nom</mat-label>
+            <input autocomplete='off' matInput formControlName='name'>
+        </mat-form-field>
+        <mat-form-field class='col-sm-6' appearance='outline'>
+            <mat-label>Département</mat-label>
+            <mat-select formControlName='departmentId'>
+                <mat-option *ngFor='let p of departments' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</form>
+
+<div class='d-flex justify-content-center'>
+    <button *ngIf='auth.permission.create && !route.id' [disabled]='load || !form.valid' (click)='create()'
+        mat-stroked-button color='primary'> Enregistrer
+    </button>
+    <button class='ml-1 mr-1' *ngIf='auth.permission.update && route.id' [disabled]='load || !form.valid'
+        (click)='update()' mat-stroked-button color='primary'> Modifier
+    </button>
+    <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-stroked-button
+        color='warn'> Supprimer
+    </button>
+</div>
+
+<mat-progress-spinner *ngIf='load' class='mx-auto d-block mt-1' mode='indeterminate' [diameter]='20'>
+</mat-progress-spinner>

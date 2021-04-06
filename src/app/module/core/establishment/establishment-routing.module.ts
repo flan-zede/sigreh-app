@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { BaseComponent } from '../../layout/base.component';
-import { EstablishmentComponent } from './establishment.component';
-import { EstablishmentShowComponent } from './establishment-show.component';
-import { EstablishmentDialogComponent } from './establishment-dialog.component';
+import { LayoutDefaultComponent } from 'src/app/module/layout/default/layout-default.component';
+import { EstablishmentComponent } from './list/establishment.component';
+import { EstablishmentReadComponent } from './read/establishment-read.component';
+import { EstablishmentDialogComponent } from './dialog/establishment-dialog.component';
 
 import { AuthGuard, FeatureGuard } from 'src/app/guard';
 import { Feature, Permission } from 'src/app/enum';
@@ -13,7 +13,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    component: BaseComponent,
+    component: LayoutDefaultComponent,
     children: [
       {
         path: '',
@@ -22,16 +22,16 @@ const routes: Routes = [
         component: EstablishmentComponent
       },
       {
+        path: 'read/:id',
+        canActivate: [FeatureGuard],
+        data: { feature: Feature.Establishment, permission: Permission.Read },
+        component: EstablishmentReadComponent
+      },
+      {
         path: 'create',
         canActivate: [FeatureGuard],
         data: { feature: Feature.Establishment, permission: Permission.Create },
         component: EstablishmentDialogComponent
-      },
-      {
-        path: 'read/:id',
-        canActivate: [FeatureGuard],
-        data: { feature: Feature.Establishment, permission: Permission.Read },
-        component: EstablishmentShowComponent
       },
       {
         path: 'update/:id',

@@ -1,0 +1,29 @@
+<button mat-icon-button (click)='router.navigate([route.path])'>
+    <mat-icon>keyboard_backspace</mat-icon>
+</button>
+
+<div class='row mt-2 mb-2' *ngIf='item'>
+    <div class='col-sm-6'>
+        <b>Nom</b>
+        <h4>{{ item.name }}</h4>
+    </div>
+    <div class='col-sm-6'>
+        <b>Departement</b>
+        <h4>{{ item.department?.name }}</h4>
+    </div>
+</div>
+
+<div class='d-flex justify-content-center'>
+    <button *ngIf='auth.permission.create' (click)='router.navigate([route.path + "/create"])' [disabled]='load'
+        mat-stroked-button color='primary'> Ajouter
+    </button>
+    <button class='ml-1 mr-1' *ngIf='auth.permission.update && route.id' [disabled]='load' mat-stroked-button
+        (click)='router.navigate([route.path + "/update/" + route.id])' color='primary'> Modifier
+    </button>
+    <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-stroked-button
+        color='warn'> Supprimer
+    </button>
+</div>
+
+<mat-progress-spinner class='mx-auto d-block mt-1' mode='indeterminate' [diameter]='20' *ngIf='load'>
+</mat-progress-spinner>

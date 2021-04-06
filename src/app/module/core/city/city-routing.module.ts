@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { BaseComponent } from '../../layout/base.component';
-import { CityComponent } from './city.component';
-import { CityShowComponent } from './city-show.component';
-import { CityDialogComponent } from './city-dialog.component';
+import { LayoutDefaultComponent } from 'src/app/module/layout/default/layout-default.component';
+import { CityComponent } from './list/city.component';
+import { CityReadComponent } from './read/city-read.component';
+import { CityDialogComponent } from './dialog/city-dialog.component';
 
 import { AuthGuard, FeatureGuard } from 'src/app/guard';
 import { Feature, Permission } from 'src/app/enum';
@@ -13,7 +13,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    component: BaseComponent,
+    component: LayoutDefaultComponent,
     children: [
       {
         path: '',
@@ -22,16 +22,16 @@ const routes: Routes = [
         component: CityComponent
       },
       {
+        path: 'read/:id',
+        canActivate: [FeatureGuard],
+        data: { feature: Feature.City, permission: Permission.Read },
+        component: CityReadComponent
+      },
+      {
         path: 'create',
         canActivate: [FeatureGuard],
         data: { feature: Feature.City, permission: Permission.Create },
         component: CityDialogComponent
-      },
-      {
-        path: 'read/:id',
-        canActivate: [FeatureGuard],
-        data: { feature: Feature.City, permission: Permission.Read },
-        component: CityShowComponent
       },
       {
         path: 'update/:id',

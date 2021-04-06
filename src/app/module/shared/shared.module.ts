@@ -2,37 +2,33 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../material/material.module';
 
 import {
-  AlertConfirmComponent,
-  ModalSelectComponent,
+  ConfirmComponent,
+  SelectComponent,
   PaginatorComponent,
   PartnerComponent,
-  SearchBarComponent,
+  SearchbarComponent,
 } from './component';
 
 import {
   ConfirmEqualDirective,
-  NoSpaceDirective,
-  NumericDirective
+  NoSpaceDirective
 } from './directive';
 
 import {
   SearchFilterPipe
 } from './pipe';
 
-
 const elements = [
-  AlertConfirmComponent,
-  ModalSelectComponent,
+  ConfirmComponent,
+  SelectComponent,
   PaginatorComponent,
   PartnerComponent,
-  SearchBarComponent,
+  SearchbarComponent,
   ConfirmEqualDirective,
   NoSpaceDirective,
-  NumericDirective,
   SearchFilterPipe
 ];
 
@@ -42,7 +38,6 @@ const elements = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule,
     MaterialModule
   ],
   exports: elements

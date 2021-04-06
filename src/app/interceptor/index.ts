@@ -1,2 +1,2 @@
-export * from './jwt.interceptor';
-export * from './http-error.interceptor';
+export * from './jwt/jwt.interceptor';
+export * from './http-error/http-error.interceptor';

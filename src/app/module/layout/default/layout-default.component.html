@@ -1,0 +1,11 @@
+<div class='d-flex flex-column h-100'>
+    <app-layout-header (toggle)='sideBarToggler()'></app-layout-header>
+    <mat-drawer-container class='h-100'>
+        <mat-drawer mode='over' [opened]='sideBarOpen' style='width:210px'>
+            <app-layout-sidenav></app-layout-sidenav>
+        </mat-drawer>
+        <mat-drawer-content class='p-3 bg-white'>
+            <router-outlet></router-outlet>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

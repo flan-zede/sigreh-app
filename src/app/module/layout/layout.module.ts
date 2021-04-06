@@ -1,33 +1,26 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { MaterialModule } from 'src/app/module/material/material.module';
 
-import { HeaderComponent } from './header.component';
-import { SideNavigationComponent } from './side-navigation.component';
-import { TopNavigationComponent } from './top-navigation.component';
-import { BaseComponent } from './base.component';
-import { BaseAuthComponent } from './base-auth.component';
+import { LayoutDefaultComponent } from './default/layout-default.component';
+import { LayoutHeaderComponent } from './header/layout-header.component';
+import { LayoutSidenavComponent } from './sidenav/layout-sidenav.component';
 
 @NgModule({
   declarations: [
-    BaseAuthComponent,
-    BaseComponent,
-    HeaderComponent,
-    SideNavigationComponent,
-    TopNavigationComponent
+    LayoutDefaultComponent,
+    LayoutHeaderComponent,
+    LayoutSidenavComponent
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild([]),
-    TranslateModule,
+    RouterModule,
     MaterialModule
   ],
   exports: [
-    BaseAuthComponent,
-    BaseComponent
+    LayoutDefaultComponent
   ]
 })
 export class LayoutModule { }

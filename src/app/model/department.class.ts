@@ -1,4 +1,5 @@
-﻿import { Region } from './region.class';
+﻿import { City } from './city.class';
+import { Region } from './region.class';
 import { User } from './user.class';
 
 export class Department {
@@ -6,5 +7,6 @@ export class Department {
   name: string;
   regionId: number;
   region: Region;
+  cities: City[];
   users: User[] = [];
 }

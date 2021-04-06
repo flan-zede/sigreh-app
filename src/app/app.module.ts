@@ -9,16 +9,11 @@ import { environment } from '../environments/environment';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
 import { MaterialModule } from './module/material/material.module';
 import { LayoutModule } from './module/layout/layout.module';
 import { SharedModule } from './module/shared/shared.module';
 
 import { JwtInterceptor, HttpErrorInterceptor } from './interceptor';
-
-function createTranslateLoader(http: HttpClient) { return new TranslateHttpLoader(http, './assets/i18n/', '.json'); }
 
 @NgModule({
   declarations: [
@@ -33,13 +28,6 @@ function createTranslateLoader(http: HttpClient) { return new TranslateHttpLoade
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
-    }),
     LayoutModule,
     SharedModule
   ],

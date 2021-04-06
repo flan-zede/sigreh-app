@@ -1,0 +1,130 @@
+<button mat-icon-button (click)='router.navigate([route.path])'>
+    <mat-icon>keyboard_backspace</mat-icon>
+</button>
+
+<form [formGroup]='form'>
+    <div class='row mb-2'>
+        <div class='col-lg-12'>
+            <h3 class='border-bottom'>Information personnelle</h3>
+            <mat-slide-toggle class='mb-2' formControlName='active'></mat-slide-toggle> &nbsp; Actif
+        </div>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Prénoms</mat-label>
+            <input matInput autocomplete='off' formControlName='firstname'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Nom</mat-label>
+            <input matInput autocomplete='off' formControlName='name'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Date de naissance</mat-label>
+            <input matInput [matDatepicker]='birthdate' [max]='maxBirthdate' readonly formControlName='birthdate'>
+            <mat-datepicker-toggle matSuffix [for]='birthdate'></mat-datepicker-toggle>
+            <mat-datepicker touchUi #birthdate></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Sexe</mat-label>
+            <mat-select formControlName='gender'>
+                <mat-option *ngFor='let p of gender' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type de pièce d'identité</mat-label>
+            <mat-select formControlName='idnumberNature'>
+                <mat-option *ngFor='let p of idnumberNature' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Numéro de pièce</mat-label>
+            <input matInput autocomplete='off' formControlName='idnumber'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Type de contact</mat-label>
+            <mat-select formControlName='phoneType'>
+                <mat-option *ngFor='let p of phoneType' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Contact</mat-label>
+            <input matInput autocomplete='off' formControlName='phone'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Nationalité</mat-label>
+            <mat-select formControlName='nationality'>
+                <mat-option [value]='p.id' *ngFor='let p of nationality'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class='col-lg-12'>
+            <h3 class='border-bottom'>Compte utilisateur</h3>
+        </div>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Nom utilisateur</mat-label>
+            <input matInput autocomplete='off' formControlName='username'>
+            <mat-error *ngIf="form.controls['username'].hasError('minLength')">5 caractères minimun</mat-error>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Email</mat-label>
+            <input matInput type='email' autocomplete='off' formControlName='email'>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" autocomplete='off' formControlName='password' #password>
+            <mat-icon matSuffix (click)='hide = !hide'>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
+            <mat-error *ngIf="form.controls['password'].hasError('minLength')">5 caractères minimun</mat-error>
+        </mat-form-field>
+        <mat-form-field class='col-md-3 col-sm-6' appearance='outline'>
+            <mat-label>Confirmation du mot de passe</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" autocomplete='off' formControlName='confirmPassword'
+                appConfirmEqual='password'>
+            <mat-icon matSuffix (click)='hide = !hide'>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
+            <mat-error *ngIf='form.controls["confirmPassword"].errors?.notEqual'>Le mot de passe et sa confirmation ne
+                concordent pas.</mat-error>
+        </mat-form-field>
+        <mat-form-field class='col-sm-6' appearance='outline'>
+            <mat-label>Role</mat-label>
+            <mat-select formControlName='role'>
+                <mat-option *ngFor='let p of role' [value]='p.id'>{{ p.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class='col-md-6'></div>
+        <div class='col-md-12' *ngIf='["DRMT"].includes(form.controls["role"].value)'>
+            <button (click)='region()' mat-stroked-button>
+                <mat-icon>add</mat-icon>
+            </button>
+            <mat-chip-list>
+                <mat-chip *ngFor='let p of form.controls["regions"].value'>{{ p.name }}</mat-chip>
+            </mat-chip-list>
+        </div>
+        <div class='col-md-12' *ngIf='["DDMT","PP"].includes(form.controls["role"].value)'>
+            <button (click)='department()' mat-stroked-button>
+                <mat-icon>add</mat-icon>
+            </button>
+            <mat-chip-list>
+                <mat-chip *ngFor='let p of form.controls["departments"].value'>{{ p.name }}</mat-chip>
+            </mat-chip-list>
+        </div>
+        <div class='col-md-12' *ngIf='["REH","GEH"].includes(form.controls["role"].value)'>
+            <button (click)='establishment()' mat-stroked-button>
+                <mat-icon>add</mat-icon>
+            </button>
+            <mat-chip-list>
+                <mat-chip *ngFor='let p of form.controls["establishments"].value'>{{ p.name }}</mat-chip>
+            </mat-chip-list>
+        </div>
+    </div>
+</form>
+
+<div class='d-flex justify-content-center'>
+    <button *ngIf='auth.permission.create && !route.id' [disabled]='load || !form.valid' (click)='create()'
+        mat-stroked-button color='primary'> Enregistrer
+    </button>
+    <button *ngIf='auth.permission.update && route.id' [disabled]='load || !form.valid' (click)='update()'
+        mat-stroked-button color='primary' class='ml-1 mr-1'> Modifier
+    </button>
+    <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-stroked-button
+        color='warn'> Supprimer
+    </button>
+</div>
+
+<mat-progress-spinner *ngIf='load' class='mx-auto d-block mt-1' mode='indeterminate' [diameter]='20'>
+</mat-progress-spinner>

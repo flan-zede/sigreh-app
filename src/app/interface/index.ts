@@ -1,6 +1,6 @@
 export * from './auth-response.interface';
+export * from './client-filter.interface';
 export * from './permission.interface';
-export * from './feature-permission.interface';
 export * from './login.interface';
 export * from './menu-items.interface';
 export * from './page-response.interface';

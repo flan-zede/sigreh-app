@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { BaseAuthComponent } from '../layout/base-auth.component';
-import { AuthComponent } from './auth.component';
+import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
@@ -10,7 +9,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: AuthComponent
+        component: LoginComponent
       }
     ]
   }

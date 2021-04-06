@@ -15,6 +15,12 @@ jobs:
         uses: actions/setup-node@v1  
         with:  
           node-version: '12.x'
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Install dependencies  
         run: npm install
       - name: Lint  
@@ -27,25 +33,23 @@ jobs:
         run: npm run build:prod
       - name: Inject slug/short variables  
         uses: rlespinasse/github-slug-action@v2.x
-      - name: Upload artifact  
+      - name: Upload artifact
+        if: success()  
         uses: actions/upload-artifact@v2  
         with:  
-          name: ng9-github-actions-netlify-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
-          path: ./dist/ng9-github-actions-netlify
-
-  test:  
-    runs-on: ubuntu-latest  
-    steps:
-      - name: Inject slug/short variables  
-        uses: rlespinasse/github-slug-action@v2.x  
-      - name: Download artifact  
-        uses: actions/download-artifact@v2  
-        with:  
-          name: ng9-github-actions-netlify-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
-          path: './build'
+          name: sigreh-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
+          path: ./dist/sigreh
 
   deploy:
+    runs-on: ubuntu-latest
+    needs: build
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v2.x
+      - name: Download artefact
+        uses: actions/download-artifact@v1
+        with:
+          name: sigreh-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}
       - name: Deploy to Netlify  
         uses: nwtgck/actions-netlify@v1.1  
         with:  

@@ -1,0 +1,10 @@
+<mat-nav-list>
+    <h4 mat-list-item class='text-center'>MENU</h4>
+    <mat-divider></mat-divider>
+    <div *ngFor='let el of items'>
+        <a mat-list-item (click)='router.navigate([el.path])'>
+            <mat-icon *ngIf='el.icon'>{{ el.icon }}</mat-icon> 
+            <span i18n>{{ el.name }}</span>
+        </a>
+    </div>
+</mat-nav-list>

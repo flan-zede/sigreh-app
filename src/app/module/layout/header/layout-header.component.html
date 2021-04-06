@@ -1,0 +1,21 @@
+<mat-toolbar color='primary'>
+    <mat-toolbar-row>
+        <div class='d-flex w-100'>
+            <button mat-button (click)='router.navigate(["/"])'>
+                <img src='assets/icons/logo.png' height='38' class='mr-2' />
+                <span class='d-none d-md-inline-block'>SIGREH</span>
+            </button>
+            <button mat-button (click)='toggleSideBar()'>
+                <mat-icon>apps</mat-icon>
+            </button>
+            <div class='flex-grow-1 d-flex justify-content-end'>
+                <button mat-button [matMenuTriggerFor]='userMenu'>
+                    <mat-icon>person</mat-icon>{{ user?.username }}
+                </button>
+                <mat-menu #userMenu='matMenu'>
+                    <span mat-menu-item (click)='logout()'>Déconnexion</span>
+                </mat-menu>
+            </div>
+        </div>
+    </mat-toolbar-row>
+</mat-toolbar>

@@ -2,20 +2,18 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { TranslateModule } from '@ngx-translate/core';
-
-import { MaterialModule } from '../../material/material.module';
-import { SharedModule } from '../../shared/shared.module';
+import { MaterialModule } from 'src/app/module/material/material.module';
+import { SharedModule } from 'src/app/module/shared/shared.module';
 
 import { EstablishmentRoutingModule } from './establishment-routing.module';
-import { EstablishmentComponent } from './establishment.component';
-import { EstablishmentDialogComponent } from './establishment-dialog.component';
-import { EstablishmentShowComponent } from './establishment-show.component';
+import { EstablishmentComponent } from './list/establishment.component';
+import { EstablishmentReadComponent } from './read/establishment-read.component';
+import { EstablishmentDialogComponent } from './dialog/establishment-dialog.component';
 
 @NgModule({
   declarations: [
     EstablishmentComponent,
-    EstablishmentShowComponent,
+    EstablishmentReadComponent,
     EstablishmentDialogComponent
   ],
   imports: [
@@ -23,7 +21,6 @@ import { EstablishmentShowComponent } from './establishment-show.component';
     EstablishmentRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule,
     MaterialModule,
     SharedModule
   ]

@@ -1,0 +1,86 @@
+<button mat-icon-button (click)='router.navigate([route.path])'>
+    <mat-icon>keyboard_backspace</mat-icon>
+</button>
+
+<div class='row mb-2' *ngIf='item'>
+    <div class='col-lg-12'>
+        <h3 class='border-bottom'>Information personnelle</h3>
+    </div>
+    <div class='col-sm-6'>
+        <b>Prénoms</b>
+        <h4>{{ item.firstname }}</h4>
+        <b>Nom</b>
+        <h4>{{ item.name }}</h4>
+        <b>Date de naissance</b>
+        <h4>{{ item.birthdate | date:'mediumDate':'UTC' }}</h4>
+        <b>Sexe</b>
+        <h4 *ngFor='let p of gender'><span *ngIf='p.id == item.gender'>{{ p.name }}</span></h4>
+    </div>
+    <div class='col-sm-6'>
+        <b>Nationalité</b>
+        <span *ngFor='let p of nationality'>
+            <h4 *ngIf='p.id == item.nationality'>{{ p.name }}</h4>
+        </span>
+        <b>Type de pièce d'identité</b>
+        <span *ngFor='let p of idnumberNature'>
+            <h4 *ngIf='p.id == item.idnumberNature'>{{ p.name }}</h4>
+        </span>
+        <b>Numero de pièce</b>
+        <h4>{{ item.idnumber }}</h4>
+        <b>Contact</b>
+        <span *ngFor='let p of phoneType'>
+            <h4 *ngIf='p.id == item.phoneType'>{{ p.name }}: {{ item?.phone }}</h4>
+        </span>
+    </div>
+    <div class='col-lg-12'>
+        <h3 class='border-bottom'>Compte utilisateur</h3>
+    </div>
+    <div class='col-sm-6'>
+        <b>Nom utilisateur</b>
+        <h4>{{ item.username }}</h4>
+        <b>Email</b>
+        <h4>{{ item.email }}</h4>
+        <b>Role</b> <span *ngFor='let p of role'>
+            <h4 *ngIf='p.id == item.role'>{{ p.name }}</h4>
+        </span>
+    </div>
+    <div class='col-sm-6'>
+        <b>Créé le</b>
+        <h4>{{ item.createdAt | date:'mediumDate':'UTC' }}</h4>
+        <b>Modifié le</b>
+        <h4>{{ item.updatedAt | date:'mediumDate':'UTC' }}</h4>
+    </div>
+    <div class='col-md-12' *ngIf='["DRMT"].includes(item.role)'>
+        <span class='d-block border-bottom'>Region.s</span>
+        <mat-chip-list>
+            <mat-chip *ngFor='let p of item.regions'>{{ p.name }}</mat-chip>
+        </mat-chip-list>
+    </div>
+    <div class='col-md-12' *ngIf='["DDMT","PP"].includes(item?.role)'>
+        <span class='d-block border-bottom'>Département.s</span>
+        <mat-chip-list>
+            <mat-chip *ngFor='let p of item.departments'>{{ p.name }}</mat-chip>
+        </mat-chip-list>
+    </div>
+    <div class='col-md-12' *ngIf='["REH","GEH"].includes(item?.role)'>
+        <span class='d-block border-bottom'>Etablissement.s</span>
+        <mat-chip-list>
+            <mat-chip *ngFor='let p of item.establishments'>{{ p.name }}</mat-chip>
+        </mat-chip-list>
+    </div>
+</div>
+
+<div class='d-flex justify-content-center'>
+    <button *ngIf='auth.permission.create' (click)='router.navigate([route.path + "/create"])' [disabled]='load'
+        mat-stroked-button color='primary'> Ajouter
+    </button>
+    <button class='ml-1 mr-1' *ngIf='auth.permission.update && route.id' [disabled]='load' mat-stroked-button
+        (click)='router.navigate([route.path + "/update/" + route.id])' color='primary'> Modifier
+    </button>
+    <button *ngIf='auth.permission.delete && route.id' [disabled]='load' (click)='delete()' mat-stroked-button
+        color='warn'> Supprimer
+    </button>
+</div>
+
+<mat-progress-spinner class='mx-auto d-block mt-1' mode='indeterminate' [diameter]='20' *ngIf='load'>
+</mat-progress-spinner>

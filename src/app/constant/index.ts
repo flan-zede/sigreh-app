@@ -1,6 +1,6 @@
 export * from './bedroom-type.constant';
-export * from './dialog-config.constant';
 export * from './establishment-nature.constant';
+export * from './client-filter.constant';
 export * from './gender.constant';
 export * from './idnumber-nature.constant';
 export * from './menu-items.constant';

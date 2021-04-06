@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { BaseComponent } from '../../layout/base.component';
-import { ClientComponent } from './client.component';
-import { ClientShowComponent } from './client-show.component';
-import { ClientDialogComponent } from './client-dialog.component';
+import { LayoutDefaultComponent } from 'src/app/module/layout/default/layout-default.component';
+import { ClientComponent } from './list/client.component';
+import { ClientReadComponent } from './read/client-read.component';
+import { ClientDialogComponent } from './dialog/client-dialog.component';
 
 import { AuthGuard, FeatureGuard } from 'src/app/guard';
 import { Feature, Permission } from 'src/app/enum';
@@ -13,7 +13,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    component: BaseComponent,
+    component: LayoutDefaultComponent,
     children: [
       {
         path: '',
@@ -22,16 +22,16 @@ const routes: Routes = [
         component: ClientComponent
       },
       {
+        path: 'read/:id',
+        canActivate: [FeatureGuard],
+        data: { feature: Feature.Client, permission: Permission.Read },
+        component: ClientReadComponent
+      },
+      {
         path: 'create',
         canActivate: [FeatureGuard],
         data: { feature: Feature.Client, permission: Permission.Create },
         component: ClientDialogComponent
-      },
-      {
-        path: 'read/:id',
-        canActivate: [FeatureGuard],
-        data: { feature: Feature.Client, permission: Permission.Read },
-        component: ClientShowComponent
       },
       {
         path: 'update/:id',

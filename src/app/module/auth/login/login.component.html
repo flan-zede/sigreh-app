@@ -1,0 +1,25 @@
+<div class='d-flex justify-content-center align-items-center h-100'>
+    <div class='border p-2 d-flex flex-column' style='min-width:400px'>
+        <img class='mx-auto d-block' src='assets/icons/icon-72x72.png' />
+        <h3 class='text-center mb-2'>SIGREH <br> Identifiez-vous pour acceder au service</h3>
+        <form [formGroup]='form' *ngIf='form'>
+            <mat-form-field class='d-block' appearance='outline'>
+                <mat-label>Nom utilisateur</mat-label>
+                <input matInput autocomplete='off' formControlName='username'>
+                <mat-error *ngIf="form.controls['password'].hasError('minLength')">5 caractères minimum
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class='d-block' appearance='outline'>
+                <mat-label>Mot de passe</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'" autocomplete='off' formControlName='password'>
+                <mat-icon matSuffix (click)='hide = !hide'>{{ hide ? 'visibility' : 'visibility_off'}}</mat-icon>
+                <mat-error *ngIf="form.controls['password'].hasError('minLength')">5 caractères minimum
+                </mat-error>
+            </mat-form-field>
+            <button mat-stroked-button class='mx-auto d-block' [disabled]='form.invalid || load' (click)='login()'>
+                <mat-progress-spinner class='d-inline-block' mode='indeterminate' [diameter]='20' *ngIf='load'></mat-progress-spinner>
+                Connexion
+            </button>
+        </form>
+    </div>
+</div>
