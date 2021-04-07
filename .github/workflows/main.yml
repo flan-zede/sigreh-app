@@ -39,7 +39,7 @@ jobs:
         if: success()  
         uses: actions/upload-artifact@v2  
         with:  
-          name: sigreh-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
+          name: ${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
           path: ./dist/sigreh
 
   deploy:
@@ -51,11 +51,11 @@ jobs:
       - name: Download artefact
         uses: actions/download-artifact@v1
         with:
-          name: sigreh-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}
+          name: ${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}
       - name: Deploy to Netlify  
         uses: nwtgck/actions-netlify@v1.1  
         with:  
-          publish-dir: './dist'  
+          publish-dir: ${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}/dist/sigreh  
           production-branch: master  
           github-token: ${{ secrets.GITHUB_TOKEN }}  
           deploy-message: "Deploy from GitHub Actions"  
