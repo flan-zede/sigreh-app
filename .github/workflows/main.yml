@@ -34,7 +34,7 @@ jobs:
       - name: Build app  
         run: npm run build:prod
       - name: Inject slug/short variables  
-        uses: rlespinasse/github-slug-action@v2.x
+        uses: rlespinasse/github-slug-action@v3.x
       - name: Upload artifact
         if: success()  
         uses: actions/upload-artifact@v2  
@@ -47,7 +47,7 @@ jobs:
     needs: build
     steps:
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v2.x
+        uses: rlespinasse/github-slug-action@v3.x
       - name: Download artefact
         uses: actions/download-artifact@v1
         with:
@@ -55,7 +55,7 @@ jobs:
       - name: Deploy to Netlify  
         uses: nwtgck/actions-netlify@v1.1  
         with:  
-          publish-dir: ${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}/dist/sigreh  
+          publish-dir: ${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }} 
           production-branch: master  
           github-token: ${{ secrets.GITHUB_TOKEN }}  
           deploy-message: "Deploy from GitHub Actions"  
