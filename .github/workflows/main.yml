@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v2  
         with:  
           name: sigreh-${{ env.GITHUB_REF_SLUG }}-${{ github.run_id }}-${{ github.run_number }}  
-          path: ./build
+          path: ./dist/sigreh
 
   deploy:
     runs-on: ubuntu-latest
