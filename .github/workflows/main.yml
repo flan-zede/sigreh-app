@@ -29,7 +29,9 @@ jobs:
       - name: Unit tests  
         run: npm run test:ci 
       - name: Install web driver for E2E
-        run: npm install -g webdriver-manager && webdriver-manager update --standalone false --gecko false
+        run: npm install -g webdriver-manager
+      - name: Update webdriver manager
+        run: webdriver-manager update --standalone false --gecko false
       - name: E2E tests
         run: npm run e2e:ci
       - name: Build app  
