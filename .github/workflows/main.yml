@@ -10,18 +10,3 @@ jobs:
     steps:
       - name: Checkout source code  
         uses: actions/checkout@v2
-               
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-      - name: push to heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "sigrehapp"
-          heroku_email: "flan.zede@gmail.com"
-          branch: master
-          stack: heroku-20
