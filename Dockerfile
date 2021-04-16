@@ -1,13 +1,15 @@
-FROM node:12.18-alpine as node
-ENV NODE_ENV=production
-WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
-RUN npm run build --aot --prod
-COPY . .
+FROM node:14.1-alpine AS builder
 
-FROM nginx:1.17.5
-COPY default.conf.template /etc/nginx/conf.d/default.conf.template
+WORKDIR /opt/web
+COPY package.json package-lock.json ./
+RUN npm install
+
+ENV PATH="./node_modules/.bin:$PATH"
+
+COPY . ./
+RUN ng build --aot --prod
+
+FROM nginx:1.17-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=node  /usr/src/app/dist/sigreh /usr/share/nginx/html 
+COPY --from=builder  /opt/web/dist/sigreh /usr/share/nginx/html
 CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
