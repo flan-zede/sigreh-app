@@ -34,4 +34,3 @@ jobs:
         run: npm run e2e:ci
       - name: Build app  
         run: npm run build
-
