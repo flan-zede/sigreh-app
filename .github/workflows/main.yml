@@ -24,3 +24,4 @@ jobs:
           heroku_app_name: "sigrehapp"
           heroku_email: "flan.zede@gmail.com"
           branch: master
+          stack: heroku-20
