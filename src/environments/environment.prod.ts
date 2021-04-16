@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  api: 'https://sigreh-api.netlify.app'
+  api: 'https://sigrehapi.herokuapp.com'
 };

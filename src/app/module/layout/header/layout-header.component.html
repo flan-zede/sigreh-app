@@ -10,7 +10,11 @@
             </button>
             <div class='flex-grow-1 d-flex justify-content-end'>
                 <button mat-button [matMenuTriggerFor]='userMenu'>
-                    <mat-icon>person</mat-icon>{{ user?.username }}
+                    <mat-icon>person</mat-icon>
+                    <span [matBadgeHidden]='notificationCount > 0' [matBadge]='notificationCount'
+                        matBadgeOverlap='false' matBadgeColor='accent'>
+                        {{ user?.username }}
+                    </span>
                 </button>
                 <mat-menu #userMenu='matMenu'>
                     <span mat-menu-item (click)='logout()'>Déconnexion</span>
