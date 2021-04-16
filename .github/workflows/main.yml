@@ -5,33 +5,6 @@ on:
     branches: [ master ]
 
 jobs:  
-  build:  
-    runs-on: ubuntu-latest  
-    steps:
-      - name: Checkout source code  
-        uses: actions/checkout@v2
-      - name: Use Node.js  
-        uses: actions/setup-node@v1  
-        with:  
-          node-version: '14.x'
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
-            ${{ runner.OS }}-
-      - name: Install dependencies  
-        run: npm ci
-      - name: Lint  
-        run: npm run lint
-      - name: Unit tests  
-        run: npm run test:ci  
-      - name: E2E  
-        run: npm run e2e:ci
-      - name: Build app  
-        run: npm run build
                
   deploy:
     runs-on: ubuntu-latest

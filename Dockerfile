@@ -7,7 +7,7 @@ RUN npm install --production
 ENV PATH="./node_modules/.bin:$PATH"
 
 COPY . ./
-RUN npm run build --aot --prod
+RUN ng build --aot --prod
 
 ENV NODE_ENV=production
 CMD [ "npm", "start" ]
