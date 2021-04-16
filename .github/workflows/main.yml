@@ -31,7 +31,7 @@ jobs:
       - name: Install web driver for E2E
         run: npm install -g webdriver-manager
       - name: Update webdriver manager
-        run: webdriver-manager update --standalone false --gecko false
+        run: webdriver-manager update
       - name: E2E tests
         run: npm run e2e:ci
       - name: Build app  
