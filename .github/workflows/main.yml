@@ -24,8 +24,12 @@ jobs:
             ${{ runner.OS }}-
       - name: Install dependencies  
         run: npm ci
-      - name: Update web driver  
-        run: npm webdriver-manager update --standalone false --gecko false
+      - name: Lint  
+        run: npm run lint
+      - name: Unit tests  
+        run: npm run test:ci 
+      - name: Install web driver for E2E
+        run: npm install -g webdriver-manager && webdriver-manager update --standalone false --gecko false
       - name: E2E tests
         run: npm run e2e:ci
       - name: Build app  
