@@ -10,7 +10,8 @@
     "e2e:ci": "ng e2e -c=ci",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "webdriver": "npm run webdriver-manager update --standalone false --gecko false"
+    "webdriver": "npm run webdriver-manager update --standalone false --gecko false",
+    "postinstall": "ng build --aot --prod"
   },
   "private": true,
   "dependencies": {
