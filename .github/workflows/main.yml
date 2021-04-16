@@ -38,49 +38,11 @@ jobs:
     needs: build
     steps:
       - name: Checkout source code
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: push to heroku
-      - uses: akhileshns/heroku-deploy@v3.12.12
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "sigrehapp"
           heroku_email: "flan.zede@gmail.com"
           usedocker: true
-
-      # - uses : actions-hub/docker/cli@master
-      # - uses: actions-hub/docker/login@master
-      #   env:
-      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      #     DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      #     DOCKER_REGISTRY_URL: docker.pkg.github.com
-
-      # - name: Login to github registry
-      #   uses: actions-hub/docker/login@master
-      #   env:
-      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      #     DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      #     DOCKER_REGISTRY_URL: docker.pkg.github.com
-
-      # - name : build docker image
-      #   uses : actions-hub/docker/cli@master
-      #   with :
-      #     args : build -t docker.pkg.github.com/${{ github.repository }}/sigrehapp:0.1 .
-
-      # - name: Push to github registry
-      #   uses: actions-hub/docker@master
-      #   with:
-      #     args: push docker.pkg.github.com/${{ github.repository }}/sigrehapp:0.1    
-
-      # - name : push to staging server with ssh
-      #   env :
-      #     SSHPASS : ${{ secrets.SSHPASS }}
-      #     SERVER : ${{ secrets.SERVER}}
-      #   run : |
-      #     sudo apt-get update 
-      #     sudo apt-get install sshpass -y
-      #     npm install -g @angular/cli@6.2
-      #     npm ci --debug
-      #     ng build --prod
-      #     cd dist/my-first-app/
-      #     sudo sshpass  -p ${SSHPASS}   -v  ssh -o StrictHostKeyChecking=no root@${SERVER} 'rm -rf /usr/share/nginx/html/*'
-      #     sudo sshpass -p ${SSHPASS} scp -v  -o stricthostkeychecking=no -r *.* root@${SERVER}:/usr/share/nginx/html
