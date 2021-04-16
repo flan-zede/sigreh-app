@@ -9,8 +9,7 @@
     "test:ci": "ng test -c=ci",
     "e2e:ci": "ng e2e -c=ci",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "webdriverupdate": "webdriver-manager update --standalone false --gecko false"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
