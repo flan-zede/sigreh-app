@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,7 +13,7 @@ describe('LayoutDefaultComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LayoutDefaultComponent ],
-      imports: [ RouterTestingModule, BrowserAnimationsModule, LayoutModule ]
+      imports: [ RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule, LayoutModule ]
     })
     .compileComponents();
   });
