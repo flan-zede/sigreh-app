@@ -7,7 +7,7 @@ RUN npm install
 ENV PATH="./node_modules/.bin:$PATH"
 
 COPY . ./
-RUN ng build --aot --prod
+RUN npm run build --aot --prod
 
 FROM nginx:1.17-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
