@@ -4,14 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
-    "build": "ng build",
+    "build": "ng build --aot --prod",
     "test": "ng test",
     "test:ci": "ng test -c=ci",
     "e2e:ci": "ng e2e -c=ci",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "webdriver": "npm run build && webdriver-manager update --standalone false --gecko false",
-    "postinstall": "npm run build --aot --prod"
+    "webdriver": "webdriver-manager update --standalone false --gecko false"
   },
   "private": true,
   "dependencies": {
@@ -54,5 +53,9 @@
     "ts-node": "~9.1.1",
     "tslint": "~6.1.0",
     "typescript": "<4.2.0"
+  },
+  "engines": {
+    "node": ">=14.6.1 <15",
+    "npm": ">=6.14.12"
   }
 }
