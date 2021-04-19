@@ -27,12 +27,8 @@ jobs:
       - name: Lint  
         run: npm run lint
       - name: Unit tests  
-        run: npm run test:ci 
-      #- name: Install web driver for E2E
-      #  run: npm install -g webdriver-manager
-      #- name: Update webdriver manager
-      #  run: webdriver-manager update
-      #- name: E2E tests
-      #  run: npm run e2e:ci
+        run: npm run test:ci
+      - name: Update webdriver manager and E2E tests
+        run: webdriver-manager update && npm run e2e:ci
       - name: Build app  
         run: npm run build
